@@ -5,9 +5,9 @@ import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 
 import { RecoilRoot } from "recoil";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import "../global.css";
+import { PaperProvider } from "react-native-paper";
 
 const Rootlayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -40,12 +40,14 @@ const Rootlayout = () => {
 
   return (
     <RecoilRoot>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        {/* <Stack.Screen name="onboarding" options={{ headerShown: false }} /> */}
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack>
+      <PaperProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          {/* <Stack.Screen name="onboarding" options={{ headerShown: false }} /> */}
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        </Stack>
+      </PaperProvider>
     </RecoilRoot>
   );
 };

@@ -19,7 +19,7 @@ const CustomBtn = ({
     <TouchableOpacity
       onPress={handlePress}
       activeOpacity={0.7}
-      // className={`flex-row justify-center items-center mt-5 border-2 w-[60px] rounded-full`}
+      className={`flex-row justify-center items-center `}
     >
       <LinearGradient
         // colors={["#ACADFF", "#8587DC"]}
@@ -28,7 +28,7 @@ const CustomBtn = ({
         // locations={[0.2,0.5,0.8]}
         // start={{ x: 0.2, y: 0.5 }}
         // end={{ x: 0.7, y: 0.4 }}
-        className={`flex-row justify-center items-center min-h-[60px] ${customStyles}`}
+        className={`flex-row overflow-hidden rounded-full justify-center items-center min-h-[60px] ${customStyles} `}
       >
         {title && (
           <Text
@@ -39,12 +39,8 @@ const CustomBtn = ({
         )}
 
         {iconName && (
-          <View className="" >
-            <FontAwesome
-              name={iconName}
-              size={iconSize}
-              color={iconColor}
-            />
+          <View className="">
+            <FontAwesome name={iconName} size={iconSize} color={iconColor} />
           </View>
         )}
 

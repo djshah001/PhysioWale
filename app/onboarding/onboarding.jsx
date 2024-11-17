@@ -1,8 +1,12 @@
 import { View, FlatList, Animated } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
+import { IconButton, MD3Colors } from "react-native-paper";
 
 import { router } from "expo-router";
 import Svg, { Circle, Defs, G, LinearGradient, Stop } from "react-native-svg";
+
+import { LinearGradient as LG} from "expo-linear-gradient";
+
 
 import CustomBtn from "../../components/CustomBtn";
 import Pagination from "../../components/Pagination";
@@ -27,7 +31,7 @@ const OnBoarding = () => {
 
   const length = OnBoardingItems.length;
 
-  const size = 56
+  const size = 56;
   const strokeWidth = 2;
   const center = size / 2;
   const radius = size / 2 - strokeWidth / 2;
@@ -65,7 +69,7 @@ const OnBoarding = () => {
 
   return (
     <View>
-      <View className="flex-2">
+      <View className="flex">
         <FlatList
           data={OnBoardingItems}
           ref={ListRef}
@@ -83,7 +87,6 @@ const OnBoarding = () => {
                 ListRef={ListRef}
                 length={OnBoardingItems.length}
                 scrollX={scrollX}
-                // data={OnBoardingItems}
               />
             );
           }}
@@ -105,55 +108,69 @@ const OnBoarding = () => {
       </View>
       <Pagination
         length={OnBoardingItems.length}
+        data={OnBoardingItems}
         currentIndex={currentIndex}
         scrollX={scrollX}
       />
-      <View className="  justify-center pt-5 items-end w-full">
-        <Svg
-          height="150"
-          width="150"
-          viewBox="0 0 100 100"
-          className="absolute"
-        >
-          <Defs>
-            <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <Stop offset="0%" stopColor="#92A3FD" stopOpacity="1" />
-              <Stop offset="100%" stopColor="#9DCEFF" stopOpacity="1" />
-            </LinearGradient>
-          </Defs>
-
-          <G rotation={-90} origin={50}>
-            <Circle
-              ref={animRef}
-              cx="50"
-              cy="50"
-              r={radius}
-              stroke="url(#grad)"
-              strokeWidth="2.5"
-              fill="transparent"
-              strokeDasharray={circumference}
+      <View className="justify-center items-center w-full">
+        <View style={{ position: "relative", width: 150, height: 150 }}>
+          <Svg
+            height="150"
+            width="150"
+            viewBox="0 0 100 100"
+            style={{ position: "absolute", top: 0, left: 0 }}
+          >
+            <Defs>
+              <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <Stop offset="0%" stopColor="#92A3FD" stopOpacity="1" />
+                <Stop offset="100%" stopColor="#9DCEFF" stopOpacity="1" />
+              </LinearGradient>
+            </Defs>
+            <G rotation={-90} origin={50}>
+              <Circle
+                ref={animRef}
+                cx="50"
+                cy="50"
+                r={radius}
+                stroke="url(#grad)"
+                strokeWidth="2.5"
+                fill="transparent"
+                strokeDasharray={circumference}
+              />
+            </G>
+          </Svg>
+          <LG
+            colors={["#92A3FD", "#9DCEFF"]}
+            style={{
+              borderRadius: 35,
+              width: 65,
+              height: 65,
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              top: 42,
+              left: 43,
+            }}
+          >
+            <IconButton
+              icon={
+                currentIndex < OnBoardingItems.length - 1
+                  ? "chevron-right"
+                  : "check"
+              }
+              size={30}
+              iconColor="white"
+              style={{ borderRadius: 35, width: 70, height: 70 }}
+              onPress={() => {
+                if (currentIndex < OnBoardingItems.length - 1) {
+                  ListRef.current.scrollToIndex({ index: currentIndex + 1 });
+                } else {
+                  router.replace("/sign-in");
+                }
+              }}
             />
-          </G>
-        </Svg>
-        <CustomBtn
-          customStyles="w-[60px] h-[60px] rounded-full mb-5 mr-11 border-2 border-white-300"
-          textStyles="text-white"
-          iconName={`${
-            currentIndex < OnBoardingItems.length - 1
-              ? "chevron-right"
-              : "check"
-          }`}
-          iconColor="white"
-          iconSize={30}
-          handlePress={async () => {
-            // console.log(ListRef.current.items);
-            if (currentIndex < OnBoardingItems.length - 1) {
-              ListRef.current.scrollToIndex({ index: currentIndex + 1 });
-            } else {
-              router.replace("/sign-in");
-            }
-          }}
-        />
+          </LG>
+        </View>
       </View>
     </View>
   );
