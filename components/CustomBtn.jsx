@@ -1,55 +1,53 @@
-import { TouchableOpacity, Text, Image, View } from "react-native";
-import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
-import { FontAwesome } from "@expo/vector-icons";
-
-const CustomBtn = ({
-  title,
-  handlePress,
-  customStyles,
-  textStyles,
-  isLoading,
-  image,
-  imageStyles,
-  iconName,
-  iconSize,
-  iconColor,
-}) => {
+import React from "react";
+import { View } from "react-native";
+import { Button } from "react-native-paper";
+export default function CustomBtn({ handleSignIn }) {
   return (
-    <TouchableOpacity
-      onPress={handlePress}
-      activeOpacity={0.7}
-      className={`flex-row justify-center items-center `}
+    <View
+      style={{
+        elevation: 5,
+        // Android shadow shadow
+        Color: "#000",
+        // iOS shadow
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        borderRadius: 25,
+        // Match the border radius of the gradient
+        overflow: "hidden",
+      }}
     >
       <LinearGradient
-        // colors={["#ACADFF", "#8587DC"]}
-        colors={["#9DCEFF", "#92A3FD"]}
-        // colors={["#9DCEFF", "#92A3FD","#FB91E6"]}
-        // locations={[0.2,0.5,0.8]}
-        // start={{ x: 0.2, y: 0.5 }}
-        // end={{ x: 0.7, y: 0.4 }}
-        className={`flex-row overflow-hidden rounded-full justify-center items-center min-h-[60px] ${customStyles} `}
+        colors={["#9DCEFF", "#95AEFE"]} // colors={[ "#56BBF1","#63a4ff"]}
+        // locations={[0.2, 0.5, 0.8]}
+        start={{
+          x: 0.7,
+          y: 0.4,
+        }}
+        end={{
+          x: 0.4,
+          y: 0.1,
+        }}
+        className=" py-2 px-2 rounded-full overflow-hidden "
       >
-        {title && (
-          <Text
-            className={`□ text-white-300 font-psemibold text-lg mr-2 ${textStyles} `}
-          >
-            {title}
-          </Text>
-        )}
-
-        {iconName && (
-          <View className="">
-            <FontAwesome name={iconName} size={iconSize} color={iconColor} />
-          </View>
-        )}
-
-        {image && (
-          <Image source={image} resizeMode="contain" className={imageStyles} />
-        )}
+        <Button
+          icon="login" 
+          // buttonColor="#95AEFE"
+          textColor="#F7F8F8" 
+          contentStyle={{
+            flexDirection: "row-reverse",
+          }}
+          onPress={() => {
+            handleSignIn();
+          }}
+        >
+          Sign In
+        </Button>
       </LinearGradient>
-    </TouchableOpacity>
+    </View>
   );
-};
-
-export default CustomBtn;
+}

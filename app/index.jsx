@@ -48,7 +48,7 @@ const Index = () => {
 
   return (
     <SafeAreaView>
-      {true ? (
+      {IsAppFirstOpened ? (
         <OnBoarding />
       ) : IsLoggedIn ? (
         <Redirect href="/home" />
