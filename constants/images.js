@@ -10,6 +10,8 @@ import runner from "../assets/images/runner.png";
 import fitness from "../assets/images/fitness.png";
 import meditation from "../assets/images/meditation.png";
 import signIn from "../assets/images/signIn.png";
+import doctor from "../assets/images/doctor.png";
+import no from "../assets/images/no.png";
 
 export default {
   profile,
@@ -23,5 +25,7 @@ export default {
   runner,
   fitness,
   meditation,
-  signIn
+  signIn,
+  doctor,
+  no
 };

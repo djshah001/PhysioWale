@@ -20,6 +20,7 @@
     "expo-router": "~4.0.5",
     "expo-status-bar": "~2.0.0",
     "libphonenumber-js": "^1.11.14",
+    "moti": "^0.29.0",
     "nativewind": "^4.1.23",
     "physiowale": "file:",
     "react": "18.3.1",

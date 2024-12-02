@@ -14,38 +14,75 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useSignInState, useUserDataState } from "../../atoms/store";
 
-import { icons, images } from "../../constants";
+import { images } from "../../constants";
+import useLoadingAndDialog from "../../components/Utility/useLoadingAndDialog";
 
-import { CountrySelector } from "../../components/CountrySelector";
-import { LinearGradient } from "expo-linear-gradient";
-
-const SignIn = ({ withFlag = true, withCallingCode = true }) => {
+const SignIn = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [data, setdata] = useSignInState();
   const [UserData, setUserData] = useUserDataState();
 
-  const handleSignIn = async () => {
-    console.log("hi");
-    console.log(form);
-    const res = await axios.post(
-      "http://192.168.242.172:3001/api/v/auth/signin",
-      form
-    );
-    console.log(res.data);
-    if (res.data.success) {
-      setdata(res.data.authToken);
-      await AsyncStorage.setItem("authToken", res.data.authToken);
-      await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
+  /* -------------------------------------------------------------------------- */
+  /*                            Loadin and alert box states                     */
+  /* -------------------------------------------------------------------------- */
 
-      router.replace("/home");
-    } else {
+  const {
+    IsLoading,
+    setIsLoading,
+    visible,
+    showDialog,
+    hideDialog,
+    Error,
+    setError,
+  } = useLoadingAndDialog();
+
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL; //API URL
+
+  /* -------------------------------------------------------------------------- */
+  /*                              sign in function                              */
+  /* -------------------------------------------------------------------------- */
+
+  const handleSignIn = async () => {
+    try {
+      setIsLoading(true);
+      const res = await axios.post(`${apiUrl}/api/v/auth/signin`, form);
+      console.log(res.data);
+      if (res.data.success) {
+        setdata(res.data.authToken);
+        await AsyncStorage.setItem("authToken", res.data.authToken);
+
+        // const result = await axios.post(
+        //   `${apiUrl}/api/v/auth/getloggedinuser`,
+        //   {},
+        //   { headers: { authToken: res.data.authToken } }
+        // );
+
+        // console.log(result);
+        // if (result.data.success) {
+        //   setUserData(result.data.user);
+        // }
+
+        await AsyncStorage.setItem("isLoggedIn", JSON.stringify(true));
+
+        router.replace("/home");
+      } else {
+        setError(res.data.errors[0].msg);
+        // req.data.errors);
+        showDialog();
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(true);
       showDialog();
+      setIsLoading(false);
     }
   };
 
-  const [visible, setVisible] = React.useState(false);
-  const showDialog = () => setVisible(true);
-  const hideDialog = () => setVisible(false);
+  console.log(Error)
+
+  /* -------------------------------------------------------------------------- */
+  /*                               for Number otp                               */
+  /* -------------------------------------------------------------------------- */
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [show, setShow] = useState(false);
@@ -58,6 +95,10 @@ const SignIn = ({ withFlag = true, withCallingCode = true }) => {
     const phoneNumberObj = parsePhoneNumberFromString(fullNumber);
     setIsValid(phoneNumberObj ? phoneNumberObj.isValid() : false);
   };
+
+  /* -------------------------------------------------------------------------- */
+  /*                         switch between two methods                         */
+  /* -------------------------------------------------------------------------- */
 
   const [showSignIn, setshowSignIn] = useState(true);
 
@@ -119,12 +160,17 @@ const SignIn = ({ withFlag = true, withCallingCode = true }) => {
         )}
 
         <View className=" w-5/6 justify-center ">
-          <CustomBtn handleSignIn={handleSignIn} />
+          <CustomBtn
+            title="Sign In"
+            iconName="login"
+            handlePress={handleSignIn}
+            loading={IsLoading}
+          />
 
           <View className="mt-5 justify-center items-center w-full">
             <Text className="text-black text-base">
               New to ProjectP ?{" "}
-              <Link href="/sign-up" className="text-secondary-300">
+              <Link href="/send-otp" className="text-secondary-300">
                 {" "}
                 Sign UP{" "}
               </Link>
@@ -132,7 +178,11 @@ const SignIn = ({ withFlag = true, withCallingCode = true }) => {
           </View>
         </View>
 
-        <AlertBox visible={visible} hideDialog={hideDialog} />
+        <AlertBox
+          visible={visible}
+          hideDialog={hideDialog}
+          content={Error}
+        />
 
         {/* </View> */}
       </ScrollView>

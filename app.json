@@ -2,7 +2,7 @@
   "expo": {
     "name": "PhysioWale",
     "scheme": "PhysioWale",
-    "slug": "PhysioWale",
+    "slug": "physiowale",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,6 +26,15 @@
     },
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d8a93db7-4e3a-44e1-95a4-e19f989b5832"
+      }
+    },
+    "owner": "darshanx01"
   }
 }

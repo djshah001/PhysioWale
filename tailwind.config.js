@@ -7,13 +7,15 @@ module.exports = {
       colors: {
         primary: "#fffff",
         white: {
+          100: "#ffffff",
           300: "#F7F8F8",
         },
         secondary: {
           DEFAULT: "#95aefe",
-          100: "#FF9001",
+          100: "#95AEFE",
           200: "#95c7fe",
-          300: "#92A3FD",
+          // 200: "#85c7fe",
+          300: "#95AEFE",
         },
         black: {
           DEFAULT: "#000",
@@ -34,6 +36,11 @@ module.exports = {
         pbold: ["Poppins-Bold", "sans-serif"],
         pextrabold: ["Poppins-ExtraBold", "sans-serif"],
         pblack: ["Poppins-Black", "sans-serif"],
+        osbold: ["OpenSans-Bold", "sans-serif"],
+        osextrabold: ["OpenSans-ExtraBold", "sans-serif"],
+        osmedium: ["OpenSans-Medium", "sans-serif"],
+        osregular: ["OpenSans-Regular", "sans-serif"],
+        ossemibold: ["OpenSans-SemiBold", "sans-serif"],
       },
     },
   },

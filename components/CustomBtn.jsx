@@ -2,7 +2,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { View } from "react-native";
 import { Button } from "react-native-paper";
-export default function CustomBtn({ handleSignIn }) {
+export default function CustomBtn({
+  title,
+  iconName,
+  handlePress,
+  loading,
+  disabled,
+}) {
   return (
     <View
       style={{
@@ -35,17 +41,20 @@ export default function CustomBtn({ handleSignIn }) {
         className=" py-2 px-2 rounded-full overflow-hidden "
       >
         <Button
-          icon="login" 
+          icon={iconName}
+          // size={30}
+          loading={loading || false}
+          disabled={disabled || false}
           // buttonColor="#95AEFE"
-          textColor="#F7F8F8" 
+          textColor="#F7F8F8"
           contentStyle={{
             flexDirection: "row-reverse",
           }}
           onPress={() => {
-            handleSignIn();
+            handlePress();
           }}
         >
-          Sign In
+          {title}
         </Button>
       </LinearGradient>
     </View>

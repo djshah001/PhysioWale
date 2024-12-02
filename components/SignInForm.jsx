@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View } from "react-native";
 import { HelperText, TextInput } from "react-native-paper";
 
 export default function SignInForm({ setForm, form }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [IsValidEmail, setIsValidEmail] = useState(true);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+
+  const passwordRef = useRef(null);
 
   const handleEmailChange = (email) => {
     setForm({ ...form, email });
@@ -12,30 +14,30 @@ export default function SignInForm({ setForm, form }) {
     setIsValidEmail(emailRegex.test(email));
   };
 
-  return (
-    <View className=" w-5/6 justify-center my-4 ">
-      {/* <Text className=" font-psemibold text-3xl mb-1 text-center ">Hey There,</Text> */}
-      {/* <Text className=" font-psemibold text-3xl text-center ">Log In </Text> */}
+  const handlePasswordChange = (password) => {
+    setForm({ ...form, password });
+  };
 
+  return (
+    <View className="w-5/6 justify-center my-4">
       <TextInput
         mode="outlined"
-        label="Email"
+        label="  Email"
         placeholder="Email"
         placeholderTextColor="#6d6d6d"
         value={form.email}
         onChangeText={handleEmailChange}
         keyboardType="email-address"
+        returnKeyType="next"
+        onSubmitEditing={() => passwordRef.current.focus()}
         activeOutlineColor="#95AEFE"
         outlineColor="#6d6d6d"
-        // outlineStyle={{
-        //   borderRadius: 10,
-        // }}
         theme={{ roundness: 25 }}
         left={<TextInput.Icon icon="email" color="#6d6d6d" />}
       />
       <HelperText
         type="error"
-        visible={!IsValidEmail}
+        visible={!isValidEmail}
         padding="normal"
         style={{ paddingVertical: 0, paddingLeft: 25 }}
       >
@@ -44,17 +46,22 @@ export default function SignInForm({ setForm, form }) {
 
       <TextInput
         mode="outlined"
-        label="Password"
+        label="  Password"
         placeholder="Password"
         placeholderTextColor="#6d6d6d"
         value={form.password}
-        onChangeText={(e) => setForm({ ...form, password: e })}
+        onChangeText={handlePasswordChange}
         secureTextEntry={!passwordVisible}
         activeOutlineColor="#95AEFE"
         outlineColor="#6B7280"
+        returnKeyType="done"
+        ref={passwordRef}
+        onSubmitEditing={() => {
+          // Add any logic you want to handle when "done" is pressed
+        }}
         style={{
           borderRadius: 25,
-          overflow: "hidden", // Ensures the border radius is respected
+          overflow: "hidden",
         }}
         theme={{ roundness: 25 }}
         left={<TextInput.Icon icon="lock" color="#6d6d6d" />}

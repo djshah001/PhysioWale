@@ -1,131 +1,63 @@
+import TabIcon from "../../components/TabIcon";
 import React from "react";
-import { View, Text, Image } from "react-native";
 
-import { Tabs, Redirect } from "expo-router";
-
-import { icons } from "../../constants";
-import Ionicons from "@expo/vector-icons/Ionicons";
-
-const TabIcon = ({ iconName, color, name, focused }) => {
-  console.log(focused);
-  return (
-    <View className={`items-center justify-center w-12 h-12 rounded-lg mb-2 `}>
-      <Ionicons
-        name={iconName}
-        size={24}
-        color={`${focused ? "#000" : "#8a939f"}`}
-      />
-      <Text className={`text-[12px] text-${focused ? "#000" : "gray-400"}`}>{name}</Text>
-    </View>
-  );
-};
+import { router, Tabs } from "expo-router";
+import { TouchableOpacity } from "react-native";
+import TabBarComp from "../../components/TabNav/TabBarComp";
+import { Ionicons } from "@expo/vector-icons";
 
 const TabsLayout = () => {
   return (
     <>
       <Tabs
-        screenOptions={{
-          tabBarShowLabel: false,
-          tabBarInactiveTintColor: "#cdcde0",
-          tabBarActiveTintColor: "#92A3FD",
-          tabBarStyle: {
-            backgroundColor: "#F7F8F8",
-            // borderTopColor:'#000',
-            // borderTopRightRadius: 20,
-            // borderTopLeftRadius: 20,
-            // borderTopWidth: 2,
-            paddingVertical: 10,
-            height: 68,
-          },
-        }}
+        tabBar={(props) => <TabBarComp {...props} />}
+        screenOptions={{ headerShown: false }}
       >
         <Tabs.Screen
           name="home"
-          options={{
-            title: "Home",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => {
-              return (
-                <TabIcon
-                  iconName="home-outline"
-                  color={color}
-                  name="Home"
-                  focused={focused}
-                />
-              );
-            },
-          }}
+          options={{ title: "Home", icon: "home-outline", focusedIcon: "home" }}
         />
-
         <Tabs.Screen
           name="workouts"
           options={{
-            title: "Workout",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => {
-              return (
-                <TabIcon
-                  iconName="barbell-outline"
-                  color={color}
-                  name="Workout"
-                  focused={focused}
-                />
-              );
-            },
+            title: "Workouts",
+            icon: "barbell-outline",
+            focusedIcon: "barbell",
           }}
         />
-
-        {/* <Tabs.Screen
-          name="bookmark"
-          options={{
-            title: "Bookmark",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => {
-              return (
-                <TabIcon
-                  icon={icons.bookmark}
-                  color={color}
-                  name="Bookmark"
-                  focused={focused}
-                />
-              );
-            },
-          }}
-        />
-
         <Tabs.Screen
-          name="create"
+          name="profile"
           options={{
-            title: "Create",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => {
-              return (
-                <TabIcon
-                  icon={icons.plus}
-                  color={color}
-                  name="Create"
-                  focused={focused}
-                />
-              );
-            },
-          }}
-        />
+            // headerShown: true,
+            // headerTitleStyle: {
+            //   fontFamily: "OpenSans-Bold",
+            //   // fontWeight: 600,
+            //   fontSize: 24,
+            //   color: "#5CAFFF",
+            //   letterSpacing: 1.2,
+            // },
+            // headerTitleAlign: "center",
+            // headerStyle: { height: 80 },
 
-        <Tabs.Screen
-          name="Profile"
-          options={{
+            // headerTransparent: true,
+            // headerLeft: () => (
+            //   <TouchableOpacity
+            //     onPress={() => router.back()}
+            //     style={{ marginLeft: 10 }}
+            //   >
+            //     <Ionicons name="arrow-undo" size={25} color="#5CAFFF" />
+            //   </TouchableOpacity>
+            // ),
+
             title: "Profile",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) => {
-              return (
-                <TabIcon
-                  icon={icons.profile}
-                  color={color}
-                  name="Profile"
-                  focused={focused}
-                />
-              );
-            },
+            icon: "person-outline",
+            focusedIcon: "person",
+          }}
+        />
+        {/* <Tabs.Screen
+          name="(notifications)"
+          options={{
+            href: null,
           }}
         /> */}
       </Tabs>

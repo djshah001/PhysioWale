@@ -1,12 +1,11 @@
-import { View, FlatList, Animated } from "react-native";
+import { View, FlatList, Animated, ScrollView } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { IconButton, MD3Colors } from "react-native-paper";
 
 import { router } from "expo-router";
 import Svg, { Circle, Defs, G, LinearGradient, Stop } from "react-native-svg";
 
-import { LinearGradient as LG} from "expo-linear-gradient";
-
+import { LinearGradient as LG } from "expo-linear-gradient";
 
 import CustomBtn from "../../components/CustomBtn";
 import Pagination from "../../components/Pagination";
@@ -29,8 +28,11 @@ const OnBoarding = () => {
     setCurrentIndex(viewableItems[0].index);
   }).current;
 
-  const length = OnBoardingItems.length;
+  /* -------------------------------------------------------------------------- */
+  /*                            For circle animation                            */
+  /* -------------------------------------------------------------------------- */
 
+  const length = OnBoardingItems.length;
   const size = 56;
   const strokeWidth = 2;
   const center = size / 2;
@@ -68,8 +70,14 @@ const OnBoarding = () => {
   });
 
   return (
-    <View>
-      <View className="flex">
+    <ScrollView
+      contentContainerStyle={{
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+      }}
+    >
+      {/* <View className="flex"> */}
         <FlatList
           data={OnBoardingItems}
           ref={ListRef}
@@ -105,15 +113,14 @@ const OnBoarding = () => {
             { useNativeDriver: false }
           )}
         />
-      </View>
+      {/* </View> */}
+      <View className="justify-center items-center w-full ">
       <Pagination
-        length={OnBoardingItems.length}
         data={OnBoardingItems}
-        currentIndex={currentIndex}
         scrollX={scrollX}
+        customStyles='mt-6'
       />
-      <View className="justify-center items-center w-full">
-        <View style={{ position: "relative", width: 150, height: 150 }}>
+        <View style={{ position: "relative", width: 150, height: 125 }}>
           <Svg
             height="150"
             width="150"
@@ -160,7 +167,7 @@ const OnBoarding = () => {
               }
               size={30}
               iconColor="white"
-              style={{ borderRadius: 35, width: 70, height: 70 }}
+              style={{ borderRadius: 35, width: 70, height: 70, position:'absolute' }}
               onPress={() => {
                 if (currentIndex < OnBoardingItems.length - 1) {
                   ListRef.current.scrollToIndex({ index: currentIndex + 1 });
@@ -172,7 +179,8 @@ const OnBoarding = () => {
           </LG>
         </View>
       </View>
-    </View>
+      {/* </View> */}
+    </ScrollView>
   );
 };
 
