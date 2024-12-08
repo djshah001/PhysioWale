@@ -3,7 +3,14 @@ import CustomBtn from "../../components/CustomBtn";
 import SignInForm from "../../components/SignInForm";
 import OTPSignIn from "../../components/OTPSignIn";
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  StatusBar,
+} from "react-native";
 
 import axios from "axios";
 import { Link, router } from "expo-router";
@@ -43,8 +50,8 @@ const SignIn = () => {
   /* -------------------------------------------------------------------------- */
 
   const handleSignIn = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const res = await axios.post(`${apiUrl}/api/v/auth/signin`, form);
       console.log(res.data);
       if (res.data.success) {
@@ -70,15 +77,13 @@ const SignIn = () => {
         // req.data.errors);
         showDialog();
       }
-      setIsLoading(false);
     } catch (error) {
-      setIsLoading(true);
       showDialog();
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
-  console.log(Error)
+  console.log(apiUrl);
 
   /* -------------------------------------------------------------------------- */
   /*                               for Number otp                               */
@@ -178,11 +183,8 @@ const SignIn = () => {
           </View>
         </View>
 
-        <AlertBox
-          visible={visible}
-          hideDialog={hideDialog}
-          content={Error}
-        />
+        <AlertBox visible={visible} hideDialog={hideDialog} content={Error} />
+        <StatusBar barStyle="default" />
 
         {/* </View> */}
       </ScrollView>
