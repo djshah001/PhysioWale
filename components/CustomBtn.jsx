@@ -8,6 +8,7 @@ export default function CustomBtn({
   handlePress,
   loading,
   disabled,
+  iconFirst,
 }) {
   return (
     <View
@@ -48,7 +49,7 @@ export default function CustomBtn({
           // buttonColor="#95AEFE"
           textColor="#F7F8F8"
           contentStyle={{
-            flexDirection: "row-reverse",
+            flexDirection: `${iconFirst ? "row" : "row-reverse"}`,
           }}
           onPress={() => {
             handlePress();

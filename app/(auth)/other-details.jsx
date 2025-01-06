@@ -1,5 +1,5 @@
 import { View, Text, ScrollView } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import DatePicker from "../../components/ReUsables/DatePicker";
@@ -7,34 +7,93 @@ import CustomDropDown from "../../components/ReUsables/CustomDropDown";
 import CustomInput from "./../../components/ReUsables/CustomInput.jsx";
 import { router } from "expo-router";
 import CustomBtn from "../../components/CustomBtn.jsx";
+import * as Location from "expo-location";
+import useLoadingAndDialog from "../../components/Utility/useLoadingAndDialog.jsx";
+import AlertBox from "../../components/AlertBox.jsx";
+import * as Linking from "expo-linking";
 
 const OtherDetails = () => {
-  const endYear = new Date().getFullYear();
+  const [location, setLocation] = useState(null);
+  // const [locationService, setLocationServices] = useState(null);
+  const [RequestStatus, setRequestStatus] = useState(null);
 
-  const OPTIONS = [
-    { label: "Male", value: "male", icon: "mars" },
-    { label: "Female", value: "female", icon: "venus" },
-    { label: "Others", value: "others", icon: "circle-exclamation" },
-  ];
+  const {
+    IsLoading,
+    setIsLoading,
+    visible,
+    showDialog,
+    hideDialog,
+    Error,
+    setError,
+  } = useLoadingAndDialog();
 
-  const [form, setForm] = useState({
-    gender: "",
-    DOB: "",
-    weight: "",
-    height: "",
-  });
+  const getCurrentLocation = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    console.log(status);
+    setRequestStatus(status);
+    if (status !== "granted") {
+      setError("Permission to access location was denied");
+      showDialog();
+      return;
+    }
 
-  const handleNextPress = () => {
-    console.log("Form Data:", form);
-    // router.push("/sign-up");
+    const providerStatus = await Location.getProviderStatusAsync();
+    if (!providerStatus.locationServicesEnabled) {
+      setError(
+        "Location services (GPS) are disabled. Please enable them to proceed."
+      );
+      showDialog();
+      return;
+    }
+
+    // // let location = await Location.getCurrentPositionAsync({});
+    // let i = await Location.getProviderStatusAsync();
+
+    // const i = await Location.getForegroundPermissionsAsync()
+    // console.log({i:i});
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation(location);
   };
 
-  const handleChange = (field, value) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+  useEffect(() => {
+    getCurrentLocation();
+    // if(!)
+  }, []);
+
+  console.log(location);
+
+  const hideAlert = () => {
+    hideDialog();
+    if (RequestStatus !== "granted") {
+      Linking.openSettings();
+    }
   };
+
+  const [hospitals, setHospitals] = useState([]);
+
+  const getNearbyHospitals = async () => {
+    const userLocation = await Location.getCurrentPositionAsync({});
+    setLocation(userLocation.coords);
+
+    const apiKey = "AIzaSyA8FUC6GCVHUSJ8Lq7H3PKV48NQLXWJ580";
+    const radius = 5000; // 5 km
+
+    const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location.coords.latitude},${location.coords.longitude}&radius=${radius}&type=hospital&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      setHospitals(response.data.results);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getNearbyHospitals();
+  }, []);
+
+  console.log(hospitals)
 
   return (
     <SafeAreaView className="bg-white-300">
@@ -54,44 +113,7 @@ const OtherDetails = () => {
               It will help us to know more about you!
             </Text>
           </View>
-
-          <View className="w-full gap-2">
-            <CustomDropDown
-              label="Select Gender"
-              data={OPTIONS}
-              value={form.gender}
-              onSelect={(value) => handleChange("gender", value)}
-            />
-
-            <DatePicker
-              date={form.DOB}
-              setDate={(date) => handleChange("DOB", date)}
-              endYear={endYear}
-            />
-
-            <CustomInput
-              label="Weight"
-              placeholder="Weight"
-              value={form.weight}
-              leftIcon="weight"
-              rightIcon="weight-kilogram"
-              handleChange={(value) => handleChange("weight", value)}
-            />
-
-            <CustomInput
-              label="Height"
-              placeholder="Height in centimeters"
-              value={form.height}
-              leftIcon="human-male-height"
-              handleChange={(value) => handleChange("height", value)}
-            />
-
-            <CustomBtn
-              title="Next"
-              iconName=""
-              handlePress={handleNextPress}
-            />
-          </View>
+          <AlertBox visible={visible} hideDialog={hideAlert} content={Error} />
         </View>
       </ScrollView>
     </SafeAreaView>

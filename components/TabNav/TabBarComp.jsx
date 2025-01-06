@@ -18,7 +18,7 @@ const TabBarComp = ({ state, descriptors, navigation }) => {
   return (
     <View
       onLayout={handleLayout}
-      className=" w-4/5 flex-row justify-between items-center relative bottom-[20] left-[10%] py-3 rounded-full bg-slate-50 shadow-md shadow-black "
+      className=" w-4/5 flex-row justify-between items-center absolute bottom-[20] left-[10%] py-3 rounded-full bg-slate-50 shadow-md shadow-black "
     >
       <MotiView
         className={` bg-secondary-200 shadow-md shadow-blue-600 justify-center items-center 

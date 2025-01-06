@@ -175,7 +175,7 @@ const SignIn = () => {
           <View className="mt-5 justify-center items-center w-full">
             <Text className="text-black text-base">
               New to ProjectP ?{" "}
-              <Link href="/send-otp" className="text-secondary-300">
+              <Link href="/other-details" className="text-secondary-300">
                 {" "}
                 Sign UP{" "}
               </Link>

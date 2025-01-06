@@ -51,6 +51,8 @@ const Rootlayout = () => {
           {/* <Stack.Screen name="onboarding" options={{ headerShown: false }} /> */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(notifications)" options={{ headerShown: false }} />
+          <Stack.Screen name="(Self-Test)" options={{ headerShown: false }} />
         </Stack>
       </PaperProvider>
     </RecoilRoot>
