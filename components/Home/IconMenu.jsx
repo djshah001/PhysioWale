@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { IconMenuData } from "../../constants/Data";
+import { router } from "expo-router";
 
 export default function IconMenu() {
   return (
@@ -12,6 +13,7 @@ export default function IconMenu() {
             <TouchableOpacity
               key={item.id}
               className="md:w-[48%] w-[22%] rounded-lg items-center"
+              onPress={() => router.navigate(`${item.title}`)}
             >
               <View className="bg-secondary-200 p-3 rounded-2xl mb-1 shadow-md shadow-black-200 ">
                 <Image

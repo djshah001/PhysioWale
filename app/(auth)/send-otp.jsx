@@ -7,47 +7,89 @@ import { Link, router } from "expo-router";
 import axios from "axios";
 import AlertBox from "../../components/AlertBox";
 import useLoadingAndDialog from "../../components/Utility/useLoadingAndDialog";
+import { useUserDataState } from "../../atoms/store";
+import CustomInput from "../../components/ReUsables/CustomInput";
 
 const SendOtp = () => {
-  const [Email, setEmail] = useState("");
-  const [IsValidEmail, setIsValidEmail] = useState(true);
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-  const { IsLoading, setIsLoading, visible, showDialog, hideDialog } =
-    useLoadingAndDialog();
+  const [userData, setUserData] = useUserDataState();
+
+  // const [Email, setEmail] = useState("");
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    number: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [PasswordMatches, setPasswordMatches] = useState(false);
+  const [IsValidEmail, setIsValidEmail] = useState(false);
+
+  const handleConfirmPassword = (confirmPassword) => {
+    setForm({ ...form, confirmPassword: confirmPassword });
+    if (confirmPassword !== form.password) {
+      setPasswordMatches(false);
+    } else {
+      setPasswordMatches(true);
+    }
+  };
 
   const handleEmailChange = (email) => {
-    setEmail(email);
+    setForm((prev) => ({ ...prev, email }));
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setIsValidEmail(emailRegex.test(email));
   };
 
-  const sendEmail = async (email) => {
-    const res = await axios.post(`${apiUrl}/api/v/auth/sendemail`, {
-      email: email,
-    });
+  const sendEmail = async () => {
+    const res = await axios.post(`${apiUrl}/api/v/auth/sendemail`, form);
+    console.log(res.data);
     return res.data;
   };
 
+  const {
+    IsLoading,
+    setIsLoading,
+    Error,
+    setError,
+    visible,
+    showDialog,
+    hideDialog,
+  } = useLoadingAndDialog();
+
   const handleNextPress = async () => {
-    setIsLoading(true);
     if (IsValidEmail) {
-      const res = await sendEmail(Email);
-      console.log(res);
-      if (res.success) {
-      router.push({
-        pathname: "/verify-otp",
-        params: { email: Email },
-      });
-      } else {
+      try {
+        setIsLoading(true);
+        const res = await sendEmail();
+        console.log(res);
+        if (res.success) {
+          setUserData(form);
+          router.push({
+            pathname: "/verify-otp",
+          });
+        } else {
+          console.log("hi");
+
+          setError(res.errors[0].msg);
+          showDialog();
+        }
+      } catch (error) {
         showDialog();
       }
+
+      setIsLoading(false);
+    } else {
+      setError("Email cannot be empty");
+      showDialog();
     }
-    setIsLoading(false);
   };
 
   return (
-    <SafeAreaView className="bg-white-300">
+    <SafeAreaView>
       <ScrollView
         contentContainerStyle={{
           justifyContent: "space-evenly",
@@ -59,33 +101,76 @@ const SendOtp = () => {
           <Text className="font-pregular text-center text-xl">
             New To PhysioWale ?,
           </Text>
-          <Text className="font-osbold text-2xl text-center">
+          <Text className="font-pextrabold tracking-wide text-2xl text-center">
             Create An Account
           </Text>
         </View>
 
         <View className="w-5/6 justify-center gap-2">
-          <TextInput
-            mode="outlined"
+          <CustomInput
+            label="  First Name"
+            placeholder="First Name"
+            value={form.firstName}
+            handleChange={(e) => {
+              setForm({ ...form, firstName: e });
+            }}
+            leftIcon="account"
+          />
+
+          <CustomInput
+            label="  Last Name"
+            placeholder="Last Name"
+            value={form.lastName}
+            handleChange={(e) => {
+              setForm({ ...form, lastName: e });
+            }}
+            theme={{ roundness: 25 }}
+            leftIcon="account"
+          />
+
+          <CustomInput
             label="  Email"
             placeholder="Enter Your Email Address"
-            placeholderTextColor="#6d6d6d"
-            value={Email}
-            onChangeText={handleEmailChange}
+            value={form.email}
+            handleChange={handleEmailChange}
             keyboardType="email-address"
-            activeOutlineColor="#95AEFE"
-            outlineColor="#6d6d6d"
             theme={{ roundness: 25 }}
-            left={<TextInput.Icon icon="email" color="#6d6d6d" />}
+            leftIcon="email"
           />
-          <HelperText
+
+          {/* <HelperText
             type="error"
             visible={!IsValidEmail}
             padding="normal"
             style={{ paddingVertical: 0, paddingLeft: 25 }}
           >
             invalid email
-          </HelperText>
+          </HelperText> */}
+
+          <CustomInput
+            label="  Password"
+            placeholder="Password"
+            placeholderTextColor="#6d6d6d"
+            value={form.password}
+            handleChange={(e) => setForm({ ...form, password: e })}
+            secureTextEntry={!passwordVisible}
+            leftIcon="lock"
+            rightIcon={passwordVisible ? "eye-off" : "eye"}
+            rightPress={() => setPasswordVisible(!passwordVisible)}
+          />
+
+          <CustomInput
+            mode="outlined"
+            label="  Confirm Password"
+            placeholder="Confirm Password"
+            value={form.confirmPassword} //
+            handleChange={handleConfirmPassword}
+            secureTextEntry={!passwordVisible}
+            activeOutlineColor={`${PasswordMatches ? "#95AEFE" : "#b00000"}`}
+            leftIcon="lock"
+            rightIcon={passwordVisible ? "eye-off" : "eye"}
+            rightPress={() => setPasswordVisible(!passwordVisible)}
+          />
         </View>
 
         <View className="w-5/6 mt-5 justify-center">
@@ -94,6 +179,7 @@ const SendOtp = () => {
             iconName="chevron-double-right"
             handlePress={handleNextPress}
             disabled={IsLoading}
+            loading={IsLoading}
           />
           <View className="mt-5 justify-center items-center">
             <Text className="text-black text-base">
@@ -106,7 +192,7 @@ const SendOtp = () => {
           <AlertBox
             visible={visible}
             hideDialog={hideDialog}
-            content="Invalid Email or Password"
+            content={Error || "Invalid Email "}
           />
         </View>
       </ScrollView>

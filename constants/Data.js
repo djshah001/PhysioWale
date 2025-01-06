@@ -56,3 +56,16 @@ export const IconMenuData = [
   { id: 3, title: "Yoga", icon: icons.yoga },
   { id: 4, title: "Booking", icon: icons.booking },
 ];
+
+export const TestSteps = [
+  { description: "Check Your Mobility With Our Simple 4 Steps" },
+  { description: "Please click on the joint that is painful." },
+  { description: "Perform the movement shown in the video." },
+  {
+    description: "Then fill out the questionnaire provided after the video.",
+  },
+  {
+    description:
+      "Based on your score, we will guide you to book an appointment with a physiotherapist.",
+  },
+];

@@ -9,7 +9,7 @@ const viewabilityConfig = {
   viewAreaCoveragePercentThreshold: 10,
 };
 
-const HorList = () => {
+const HorList = ({ data, descriptionStyles, showIndex }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const ListRef = useRef(null);
   const scrollX = useRef(new Animated.Value(10)).current;
@@ -21,23 +21,26 @@ const HorList = () => {
   return (
     <>
       <FlatList
-        data={HorizontalList}
+        data={data}
         ref={ListRef}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, i) => i.toString()}
         horizontal
         // bounces={false}
         pagingEnabled={true}
         scrollEventThrottle={16}
         showsHorizontalScrollIndicator={false}
-        renderItem={({ item }) => {
+        renderItem={({ item, index }) => {
           return (
             <ListData
               item={item}
+              index={index}
               currentIndex={currentIndex}
               ListRef={ListRef}
               length={HorizontalList.length}
               scrollX={scrollX}
-              data={HorizontalList}
+              data={data}
+              descriptionStyles={descriptionStyles}
+              showIndex={showIndex}
             />
           );
         }}

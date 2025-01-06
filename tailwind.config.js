@@ -1,30 +1,14 @@
+const { default: colors } = require("./constants/colors");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
-      colors: {
-        primary: "#fffff",
-        white: {
-          100: "#ffffff",
-          300: "#F7F8F8",
-        },
-        secondary: {
-          DEFAULT: "#95aefe",
-          100: "#95AEFE",
-          200: "#95c7fe",
-          // 200: "#85c7fe",
-          300: "#95AEFE",
-        },
-        black: {
-          DEFAULT: "#000",
-          100: "#1E1E2D",
-          200: "#232533",
-        },
-        gray: {
-          100: "#CDCDE0",
-        },
+      colors: colors,
+      borderWidth: {
+        xsm: "1px",
       },
       fontFamily: {
         pthin: ["Poppins-Thin", "sans-serif"],
