@@ -1,37 +1,36 @@
-import { View, Text, TouchableOpacity, Image } from "react-native";
 import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+
 import axios from "axios";
+import { Image } from "expo-image";
+import { BlurView } from "expo-blur";
+import { router } from "expo-router";
+import { cssInterop } from "nativewind";
+import { Icon, IconButton } from "react-native-paper";
+
+import colors from "../../constants/colors";
+
+cssInterop(Image, { className: "style" });
 
 const PhysiosNearBy = ({ clinics }) => {
-  const [photos, setPhotos] = useState({}); // To cache photo URLs by `place_id`
-  // const googleApiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY; // Replace with your API key
+  // console.log(clinics);
 
-  const apikey = "AlzaSy48uzEZAuaR7aq8iKNO8YAC4JxVgSimIzA";
+  let today = new Date();
+  let dayOfWeek = today.getDay();
 
-  // Fetch photo for a given `photo_reference`
-  const fetchPhoto = async (photoReference, placeId) => {
-    if (!photoReference) return null;
+  let days = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+  let currentDay = days[dayOfWeek];
 
-    const photoUrl = `https://maps.gomaps.pro/maps/api/place/photo?maxwidth=400&photo_reference=${photoReference}&key=${apikey}`;
-    try {
-      const { config } = await axios.get(photoUrl);
-      setPhotos((prevPhotos) => ({
-        ...prevPhotos,
-        [placeId]: config.url, // Use Axios config.url to get the full resolved URL
-      }));
-    } catch (error) {
-      console.error(`Error fetching photo for place_id ${placeId}:`, error);
-    }
-  };
-
-  // Fetch photos when clinics update
-  useEffect(() => {
-    clinics.forEach((clinic) => {
-      if (clinic.photos && clinic.photos.length > 0) {
-        fetchPhoto(clinic.photos[0].photo_reference, clinic.place_id);
-      }
-    });
-  }, [clinics]);
+  const blurhash =
+    "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
 
   return (
     <View className="px-4 w-screen ">
@@ -43,35 +42,119 @@ const PhysiosNearBy = ({ clinics }) => {
           </Text>
         </TouchableOpacity>
       </View>
-      {clinics.map((clinic, i) => (
-        <View
-          key={clinic._id}
-          className={`my-3 gap-3 justify-center bg-white-300 shadow-md shadow-black-200 rounded-3xl `}
-        >
-          <Image
-            source={{
-              uri: photos[clinic.place_id]
-                ? photos[clinic.place_id]
-                : "https://via.placeholder.com/400",
-            }}
-            className=" w-full h-72 rounded-2xl overflow-hidden "
-            resizeMode="cover"
-          />
+      {clinics.map((clinic, i) => {
+        const distance = (clinic.distance / 1000).toFixed(1);
+        const opening = clinic.timing[currentDay].opening;
+        const closing = clinic.timing[currentDay].closing;
+        return (
+          <View
+            key={clinic._id}
+            className={`my-3 gap-3 justify-center bg-white-300 shadow-md shadow-black-200 rounded-[30px] overflow-hidden `}
+          >
+            <Image
+              source={{
+                uri: clinic.images[0]
+                  ? clinic.images[0]
+                  : "https://via.placeholder.com/400",
+              }}
+              placeholder={{ blurhash }}
+              contentFit="cover"
+              transition={1000}
+              className=" w-full h-80 rounded-3xl overflow-hidden "
+            />
 
-          <View className=" absolute bottom-0 w-full">
-            <View className="px-2 py-4 bg-black-200/50 rounded-b-2xl shadow-xl">
-              {/* Overlayed content */}
-              <View className="p-3 bg-white-300 rounded-2xl">
-                <Text className="text-lg font-psemibold">{clinic.name}</Text>
-                <Text numberOfLines={2}>
-                  {clinic.address || "Address not available"}
-                </Text>
+            <BlurView
+              intensity={15}
+              tint="systemChromeMaterialLight"
+              experimentalBlurMethod="dimezisBlurView"
+              className=" absolute top-3 right-2 rounded-full overflow-hidden "
+            >
+              <IconButton
+                icon="bookmark-outline"
+                iconColor={colors.white["500"]}
+                // className="bg-white-400"
+                size={24}
+                onPress={() => console.log("Pressed")}
+              />
+            </BlurView>
+
+            <BlurView
+              intensity={15}
+              tint="systemChromeMaterialLight"
+              experimentalBlurMethod="dimezisBlurView"
+              className=" absolute top-3 left-2 rounded-full overflow-hidden flex-row items-center justify-around  "
+            >
+              <IconButton
+                icon="map-marker-radius-outline"
+                iconColor={colors.white["500"]}
+                className="bg-white-40 ml-0 "
+                size={24}
+                onPress={() => console.log("Pressed")}
+              />
+              <View className="mr-5">
+                <Text className="text-white-500 ">{distance} km</Text>
               </View>
-            </View>
+            </BlurView>
+
+            <BlurView
+              intensity={30}
+              tint="systemChromeMaterialDark"
+              experimentalBlurMethod="dimezisBlurView"
+              className=" absolute bottom-0 w-full "
+            >
+              <View className="p-3 my-2  rounded-b-3xl shadow-xl flex-row items-center justify-around bg-blac-200/50 ">
+                {/* Overlayed content */}
+                <View className=" w-9/12 gap-1 ">
+                  <Text className="text-xs font-oslight text-accent mb-1 ">
+                    <Icon
+                      source="clock-time-two-outline"
+                      size={12}
+                      color={colors.accent["DEFAULT"]}
+                    />{" "}
+                    {opening} - {closing}
+                  </Text>
+                  <Text className="text-xl font-pbold text-white-400 leading-6 ">
+                    {clinic.name}
+                  </Text>
+                  {/* <Text
+                    className=" font-osmedium text-accent "
+                    numberOfLines={1}
+                  >
+                    <Icon
+                      source="map-marker"
+                      size={16}
+                      color={colors.accent["DEFAULT"]}
+                    />
+                    {clinic.address || "Address not available"}
+                  </Text> */}
+                </View>
+                <BlurView
+                  intensity={20}
+                  tint="systemChromeMaterialLight"
+                  experimentalBlurMethod="dimezisBlurView"
+                  className=" rounded-full overflow-hidden "
+                >
+                  <IconButton
+                    icon="arrow-top-right"
+                    iconColor={colors.white["500"]}
+                    // className="bg-white-400"
+                    size={30}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/clinics/".concat(clinic._id),
+                        params: {
+                          clinicId: clinic._id,
+                        },
+                      })
+                    }
+                  />
+                </BlurView>
+              </View>
+            </BlurView>
+            {/* </> */}
           </View>
-          {/* </> */}
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 };

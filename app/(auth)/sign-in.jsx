@@ -52,7 +52,7 @@ const SignIn = () => {
   const handleSignIn = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.post(`${apiUrl}/api/v/auth/signin`, form);
+      const res = await axios.post(`${apiUrl}/api/v/auth/signin/user`, form);
       console.log(res.data);
       if (res.data.success) {
         setdata(res.data.authToken);
@@ -175,7 +175,7 @@ const SignIn = () => {
           <View className="mt-5 justify-center items-center w-full">
             <Text className="text-black text-base">
               New to ProjectP ?{" "}
-              <Link href="/other-details" className="text-secondary-300">
+              <Link href="/send-otp" className="text-secondary-300">
                 {" "}
                 Sign UP{" "}
               </Link>

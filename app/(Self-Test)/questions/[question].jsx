@@ -76,10 +76,11 @@ const QuestionScreen = () => {
   };
 
   const handleSubmitResult = async () => {
-    const result = await axios.post(
-      `${apiUrl}/api/v/selfTest/results`,
-      { userId: UserData._id,categoryId,testResult: SelectedOptions }  
-    );
+    const result = await axios.post(`${apiUrl}/api/v/selfTest/results`, {
+      userId: UserData._id,
+      categoryId,
+      testResult: SelectedOptions,
+    });
     console.log(result.data);
   };
 

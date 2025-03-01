@@ -17,12 +17,12 @@ const SendOtp = () => {
 
   // const [Email, setEmail] = useState("");
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     number: "",
     password: "",
     confirmPassword: "",
+    context: "user",
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -107,7 +107,7 @@ const SendOtp = () => {
         </View>
 
         <View className="w-5/6 justify-center gap-2">
-          <CustomInput
+          {/* <CustomInput
             label="  First Name"
             placeholder="First Name"
             value={form.firstName}
@@ -115,14 +115,14 @@ const SendOtp = () => {
               setForm({ ...form, firstName: e });
             }}
             leftIcon="account"
-          />
+          /> */}
 
           <CustomInput
-            label="  Last Name"
-            placeholder="Last Name"
-            value={form.lastName}
+            label="  Name"
+            placeholder="Name"
+            value={form.name}
             handleChange={(e) => {
-              setForm({ ...form, lastName: e });
+              setForm({ ...form, name: e });
             }}
             theme={{ roundness: 25 }}
             leftIcon="account"

@@ -143,13 +143,13 @@ const SignUp = () => {
               handleChange={(value) => handleChange("number", value)}
             />
 
+          </View>
             <CustomBtn
               title="Sign-Up"
               iconName="account-plus"
               handlePress={handleSignUp}
               loading={IsLoading}
             />
-          </View>
         </View>
         <AlertBox visible={visible} hideDialog={hideDialog} content={Error} />
       </ScrollView>

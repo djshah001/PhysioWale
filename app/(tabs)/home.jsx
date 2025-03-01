@@ -19,26 +19,31 @@ const Home = () => {
   const [UserData, setUserData] = useUserDataState();
   const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-  const getUserData = async () => {
+  const getLoggedInData = async () => {
+    console.log("first");
     const authToken = await AsyncStorage.getItem("authToken");
 
     const res = await axios.post(
-      `${apiUrl}/api/v/auth/getloggedinuser`,
+      `${apiUrl}/api/v/auth/getLoggedInData/user`,
       {},
       { headers: { authToken: authToken } }
     );
+    // console.log(res.data);
+    if (res.data.success) {
+      setUserData(res.data.loggedInData);
+    }
     return res;
   };
 
-  useEffect(() => {
-    getUserData().then((userdata) => {
-      // console.log(userdata.data);
-      if (userdata.data.success) {
-        setUserData(userdata.data.user);
-      }
-    });
-    // console.log(UserData);
-  }, []);
+  // useEffect(() => {
+  //   getUserData().then((userdata) => {
+  //     // console.log(userdata.data);
+  //     if (userdata.data.success) {
+  //       setUserData(userdata.data.loggedInData);
+  //     }
+  //   });
+  //   // console.log(UserData);
+  // }, []);
 
   // console.log(`${apiUrl}/images/profilePic/${UserData.profilePic}`);
 
@@ -99,7 +104,6 @@ const Home = () => {
 
     // const url = `https://maps.gomaps.pro/maps/api/place/nearbysearch/json?location=${location.coords.latitude},${location.coords.longitude}&radius=${radius}&type=hospital&key=${apiKey}`;
 
-
     const url = `${apiUrl}/api/v/clinics/nearbyClinics?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}&radius=5`;
 
     // console.log(url);
@@ -114,6 +118,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    getLoggedInData();
     getCurrentLocation();
     // getNearbyHospitals();
   }, []);

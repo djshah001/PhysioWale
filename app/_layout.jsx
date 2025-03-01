@@ -1,13 +1,15 @@
 import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 
-import { SplashScreen, Stack } from "expo-router";
+import { Slot, SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 
 import { RecoilRoot } from "recoil";
 
 import "../global.css";
 import { PaperProvider } from "react-native-paper";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import CustomToast from "../components/ReUsables/CustomToast";
 
 const Rootlayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -46,14 +48,20 @@ const Rootlayout = () => {
   return (
     <RecoilRoot>
       <PaperProvider>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          {/* <Stack.Screen name="onboarding" options={{ headerShown: false }} /> */}
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(notifications)" options={{ headerShown: false }} />
-          <Stack.Screen name="(Self-Test)" options={{ headerShown: false }} />
-        </Stack>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          {/* <Stack>
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(notifications)"
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="(Self-Test)" options={{ headerShown: false }} />
+          </Stack> */}
+          <Slot />
+          <CustomToast />
+        </GestureHandlerRootView>
       </PaperProvider>
     </RecoilRoot>
   );
