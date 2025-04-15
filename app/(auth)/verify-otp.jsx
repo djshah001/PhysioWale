@@ -1,24 +1,23 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, HelperText, TextInput } from "react-native-paper";
+import { Button, TextInput } from "react-native-paper";
 import CustomBtn from "../../components/CustomBtn";
-import { useLocalSearchParams } from "expo-router";
 import { router } from "expo-router";
 import useLoadingAndDialog from "../../components/Utility/useLoadingAndDialog";
 import axios from "axios";
 import AlertBox from "../../components/AlertBox";
-import { useUserDataState } from "../../atoms/store";
+import { useUserDataState, useToastSate } from "../../atoms/store";
+import { apiUrl } from "../../components/Utility/Repeatables";
 
 const VerifyOtp = () => {
   const [OTP, setOTP] = useState("");
   const [userData, setUserData] = useUserDataState();
   const emailSplit = userData.email.split("@");
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
   const hiddenEmail = userData.email[0] + "***@" + emailSplit[1];
   const otpRef = useRef(null);
 
-  console.log(userData);
+  const [toast, setToast] = useToastSate();
 
   const handleOTPChange = (otp) => {
     setOTP(otp);
@@ -26,11 +25,17 @@ const VerifyOtp = () => {
 
   const verifyOTP = async (otp) => {
     console.log(otp);
-    const res = await axios.post(`${apiUrl}/api/v/auth/verifyotp`, {
-      email: userData.email,
-      verificationCode: otp,
-    });
-    return res.data;
+    try {
+      const res = await axios.post(`${apiUrl}/api/v/auth/verifyotp`, {
+        phoneNumber: userData.phoneNumber,
+        otp: otp,
+      });
+      console.log(res.data);
+      return res.data;
+    } catch (error) {
+      console.log(error.response.data);
+      return error.response.data;
+    }
   };
 
   const {
@@ -48,14 +53,15 @@ const VerifyOtp = () => {
     const res = await verifyOTP(OTP);
     console.log(res);
     if (res.success) {
-
       router.replace({
         pathname: "/sign-up",
       });
-
     } else {
-      setError(res.errors[0].msg);
-      showDialog();
+      setToast({
+        message: res,
+        visible: true,
+        type: "error",
+      });
     }
     setIsLoading(false);
   };
@@ -71,13 +77,9 @@ const VerifyOtp = () => {
         showDialog();
       }
     } catch (error) {
+      console.log(error.response.data);
       showDialog();
     }
-  };
-
-  const hideAlert = () => {
-    hideDialog();
-    // router.replace("/sign-in");
   };
 
   useEffect(() => {
@@ -132,17 +134,12 @@ const VerifyOtp = () => {
 
         <View className="w-5/6 mt-5 justify-center">
           <CustomBtn
-            title="Next"
+            title="Verify OTP"
             iconName="chevron-double-right"
             handlePress={handleNextPress}
             // loading={IsLoading}
           />
         </View>
-        <AlertBox
-          visible={visible}
-          hideDialog={hideAlert}
-          content={Error || "Entered OTP is wrong"}
-        />
       </ScrollView>
     </SafeAreaView>
   );

@@ -1,22 +1,25 @@
-import { View, Text, ScrollView, Image, Alert } from "react-native";
+import { View, Text, ScrollView, TextInput } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { icons, images } from "../../constants";
-import FormField from "../../components/FormField";
 import CustomBtn from "../../components/CustomBtn";
-import { Link, router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import axios from "axios";
-import { useSignInState, useUserDataState } from "../../atoms/store";
-import { HelperText, TextInput } from "react-native-paper";
+import {
+  useSignInState,
+  useToastSate,
+  useUserDataState,
+} from "../../atoms/store";
 import useLoadingAndDialog from "../../components/Utility/useLoadingAndDialog";
-import AlertBox from "../../components/AlertBox";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import CustomInput from "../../components/ReUsables/CustomInput";
 import CustomDropDown from "../../components/ReUsables/CustomDropDown";
 import DatePicker from "../../components/ReUsables/DatePicker";
+import * as ImagePicker from "expo-image-picker";
+import { Image } from "expo-image";
+import { apiUrl, blurhash } from "../../components/Utility/Repeatables";
+import CustomInput from "../../components/ReUsables/CustomInput";
 
 const SignUp = () => {
   const [userData, setUserData] = useUserDataState();
+  const [toast, setToast] = useToastSate();
 
   const endYear = new Date().getFullYear();
 
@@ -28,17 +31,11 @@ const SignUp = () => {
 
   const [form, setForm] = useState({
     ...userData,
-    gender: "",
-    DOB: "",
-    weight: "",
+    profilePic: "",
+    context: "user",
     height: "",
-    number: "",
+    weight: "",
   });
-
-  const handleNextPress = () => {
-    console.log("Form Data:", form);
-    // router.push("/sign-up");
-  };
 
   const handleChange = (field, value) => {
     setForm((prev) => ({
@@ -47,111 +44,204 @@ const SignUp = () => {
     }));
   };
 
-  const {
-    IsLoading,
-    Error,
-    setError,
-    setIsLoading,
-    visible,
-    showDialog,
-    hideDialog,
-  } = useLoadingAndDialog();
+  const { IsLoading, setIsLoading } = useLoadingAndDialog();
 
   // const [data, setdata] = useSignInState();
   // console.log(data);
 
-  const [date, setDate] = useState("");
-
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL; //API URL
+  const [date, setDate] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   // console.log(date.toLocaleDateString());
 
+  const [Img, setImg] = useState(null);
+
+  const onSelectImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setImg(result.assets[0]);
+    }
+  };
+
+  const cloudUpload = async () => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("context", "user");
+    formData.append("id", userData._id);
+    formData.append("phoneNumber", userData.phoneNumber);
+    if (!!Img) {
+      formData.append("profilePic", {
+        uri: Img.uri,
+        type: Img.mimeType || "image/png",
+        name: Img.fileName,
+      });
+    }
+
+    try {
+      const res = await axios.post(`${apiUrl}/api/v/auth/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      // console.log(res.data);
+      setForm({ ...form, profilePic: res.data.filePath });
+      setToast({
+        message: "Image uploaded successfully",
+        visible: true,
+        type: "success",
+      });
+    } catch (error) {
+      console.error(error);
+      setToast({
+        message:
+          error.response.data.errors[0].msg ||
+          "Can't upload image. Please try again.",
+        visible: true,
+        type: "error",
+      });
+    }
+    setUploading(false);
+  };
+
   const handleSignUp = async () => {
-    console.log(form);
+    console.log(!!date);
     setIsLoading(true);
+
     try {
       const res = await axios.post(`${apiUrl}/api/v/auth/signup`, {
         ...form,
         DOB: date,
+        profilePic: form.profilePic,
+        _id: userData._id,
       });
       console.log(res.data);
       if (res.data.success) {
-        await AsyncStorage.setItem("isProfileComplete", JSON.stringify(false));
+        // await AsyncStorage.setItem("isProfileComplete", JSON.stringify(false));
+        setUserData({});
+        setToast({
+          message: "Signup Successfully",
+          visible: true,
+          type: "success",
+        });
         router.replace("sign-in");
       } else {
-        setError(res.data.errors[0].msg);
-        showDialog();
+        setToast({
+          message: res.data.errors[0].msg,
+          visible: true,
+          type: "error",
+        });
       }
     } catch (error) {
-      showDialog();
+      console.error(error);
+      setToast({
+        message: "Server Error",
+        visible: true,
+        type: "error",
+      });
     }
 
     setIsLoading(false);
   };
 
+  console.log(form.profilePic);
+
   return (
-    <SafeAreaView className="bg-white-300">
+    <SafeAreaView className="bg-white-300 flex-1 ">
       <ScrollView
-        className="px-4"
-        contentContainerStyle={{
-          justifyContent: "space-evenly",
-          alignItems: "center",
-        }}
+        // className="px-4"
+        contentContainerClassName="flex-grow px-10 w-full h-scree justify-evenly self-center "
       >
-        <View className="px-4 w-full h-screen justify-evenly">
-          <View>
-            <Text className="font-pbold text-2xl text-center">
-              Let’s complete your profile
-            </Text>
-            <Text className="font-pextrathin text-center text-md">
-              It will help us to know more about you!
-            </Text>
-          </View>
-
-          <View className="w-full gap-2">
-            <CustomDropDown
-              label="  Select Gender"
-              data={OPTIONS}
-              value={form.gender}
-              onSelect={(value) => handleChange("gender", value)}
-            />
-
-            <DatePicker date={date} setDate={setDate} endYear={endYear} />
-
-            <CustomInput
-              label="  Weight"
-              placeholder="Weight"
-              value={form.weight}
-              leftIcon="weight"
-              rightIcon="weight-kilogram"
-              handleChange={(value) => handleChange("weight", value)}
-            />
-
-            <CustomInput
-              label="  Height"
-              placeholder="Height in centimeters"
-              value={form.height}
-              leftIcon="human-male-height"
-              handleChange={(value) => handleChange("height", value)}
-            />
-
-            <CustomInput
-              label="  Mobile"
-              placeholder="Mobiles"
-              value={form.number}
-              leftIcon="cellphone"
-              handleChange={(value) => handleChange("number", value)}
-            />
-
-          </View>
-            <CustomBtn
-              title="Sign-Up"
-              iconName="account-plus"
-              handlePress={handleSignUp}
-              loading={IsLoading}
-            />
+        {/* <View className=" px-4 w-full h-scree justify-evenl "> */}
+        <View>
+          <Text className="font-pbold text-2xl text-center">
+            Let's complete your profile
+          </Text>
+          <Text className="font-pextrathin text-center text-md">
+            It will help us to know more about you!
+          </Text>
         </View>
-        <AlertBox visible={visible} hideDialog={hideDialog} content={Error} />
+
+        <View className="gap-4 ">
+          <CustomDropDown
+            label=" Select Gender"
+            data={OPTIONS}
+            value={form.gender}
+            onSelect={(value) => handleChange("gender", value)}
+          />
+
+          <DatePicker date={date} setDate={setDate} endYear={endYear} />
+          
+          {/* Height Input */}
+          <CustomInput
+            label="Height (cm)"
+            placeholder="Enter your height in cm"
+            keyboardType="number-pad"
+            value={form.height}
+            onChangeText={(value) => handleChange("height", value)}
+            customStyles="mt-4"
+            leftIcon="human-male-height"
+          />
+          
+          {/* Weight Input */}
+          <CustomInput
+            label="Weight (kg)"
+            placeholder="Enter your weight in kg"
+            keyboardType="number-pad"
+            value={form.weight}
+            onChangeText={(value) => handleChange("weight", value)}
+            customStyles="mt-4"
+            leftIcon="weight-kilogram"
+          />
+
+          <CustomBtn
+            title={form.profilePic ? "Change Image" : "Select your image"}
+            iconName="cloud-upload"
+            handlePress={onSelectImage}
+            // loading={IsLoading}
+            customStyles="mt-4"
+          />
+
+          {Img && (
+            // <View className="w-[30vw] justify-center">
+            <>
+              <Image
+                source={{ uri: Img.uri }} // Correct usage with a URI
+                placeholder={{ blurhash }}
+                contentFit="contain"
+                transition={1000}
+                style={{
+                  width: "200",
+                  height: "200", // Adjust the height as needed
+                  backgroundColor: "#055300",
+                  alignSelf: "center",
+                  marginVertical: 20,
+                  borderRadius: 30,
+                }}
+                imageStyle={{}}
+                blurRadius={0}
+                // className="mt-5"
+              />
+              <CustomBtn
+                title={uploading ? "Uploading..." : "Upload Image"}
+                iconName="cloud-upload"
+                handlePress={cloudUpload}
+                loading={uploading}
+                customStyles="mt-4"
+              />
+            </>
+            // </View>
+          )}
+        </View>
+        <CustomBtn
+          title="Sign-Up"
+          iconName="account-plus"
+          handlePress={handleSignUp}
+          loading={IsLoading}
+        />
+        {/* </View> */}
       </ScrollView>
     </SafeAreaView>
   );

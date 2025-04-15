@@ -55,6 +55,7 @@ export const IconMenuData = [
   { id: 2, title: "Rehab-Guide", icon: icons.selfTest },
   { id: 3, title: "Yoga", icon: icons.yoga },
   { id: 4, title: "Booking", icon: icons.booking },
+  { id: 5, title: "Appointments", icon: icons.booking, route: "/appointments/my-appointments" },
 ];
 
 export const TestSteps = [
