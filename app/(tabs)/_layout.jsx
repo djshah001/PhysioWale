@@ -1,21 +1,14 @@
-import TabIcon from "../../components/TabIcon";
 import React from "react";
-
-import { router, Tabs } from "expo-router";
-import { TouchableOpacity } from "react-native";
+import { Tabs } from "expo-router";
 import TabBarComp from "../../components/TabNav/TabBarComp";
-import { Ionicons } from "@expo/vector-icons";
+import { tabScreenOptions } from "../../constants/navigationConfig";
 
 const TabsLayout = () => {
   return (
     <>
       <Tabs
         tabBar={(props) => <TabBarComp {...props} />}
-        screenOptions={{ 
-          headerShown: false,
-          animation: "shift"
-           
-        }}
+        screenOptions={tabScreenOptions}
         // // This tells Expo Router to preserve the active tab when navigating back
         // // It will remember which tab was active and return to it
         // initialRouteName="home"
@@ -26,7 +19,7 @@ const TabsLayout = () => {
           name="home"
           options={{ title: "Home", icon: "home-outline", focusedIcon: "home" }}
         />
-        
+
         {/* Rest of your tabs remain unchanged */}
         <Tabs.Screen
           name="workouts"

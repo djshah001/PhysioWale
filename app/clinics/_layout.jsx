@@ -15,7 +15,7 @@ const ClinicLayout = () => {
         name="[clinic]"
         options={{
          
-          presentation: "card",
+          // presentation: "card",
           // animation: "ios_from_right",
           // animationDuration: 5000,
           // animationTypeForReplace: "pop",

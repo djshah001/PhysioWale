@@ -5,9 +5,10 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Appbar, Chip, Icon } from "react-native-paper";
+import { Appbar, Chip, Divider } from "react-native-paper";
 import { router } from "expo-router";
 import { cssInterop } from "nativewind";
 import axios from "axios";
@@ -15,22 +16,22 @@ import { apiUrl } from "../../components/Utility/Repeatables";
 import { useUserDataState, useToastSate } from "../../atoms/store";
 import AppointmentCard from "../../components/Appointments/AppointmentCard";
 import EmptyAppointments from "../../components/Appointments/EmptyAppointments";
-import AppointmentReminders from "../../components/Appointments/AppointmentReminders";
-
+import AppointmentAnalytics from "../../components/Appointments/AppointmentAnalytics";
+import ScreenTransition from "../../components/Utility/ScreenTransition";
 import { StatusBar } from "expo-status-bar";
 import colors from "../../constants/colors";
-import ScreenTransition from "../../components/Utility/ScreenTransition";
 
 cssInterop(Appbar, { className: "style" });
 
-const MyAppointmentsScreen = () => {
+const AppointmentHistoryScreen = () => {
   const [UserData] = useUserDataState();
   const [, setToast] = useToastSate();
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("completed");
+  const [showAnalytics, setShowAnalytics] = useState(true);
 
   const fetchAppointments = useCallback(async () => {
     try {
@@ -44,8 +45,19 @@ const MyAppointmentsScreen = () => {
       );
 
       if (response.data.success) {
-        setAppointments(response.data.data);
-        filterAppointments(response.data.data, activeFilter);
+        // Get all appointments
+        const allAppointments = response.data.data;
+        
+        // Filter to only include completed, cancelled, or expired appointments
+        const historyAppointments = allAppointments.filter(
+          (appointment) =>
+            appointment.status === "completed" ||
+            appointment.status === "cancelled" ||
+            appointment.status === "expired"
+        );
+        
+        setAppointments(historyAppointments);
+        filterAppointments(historyAppointments, activeFilter);
       }
     } catch (error) {
       console.error(
@@ -57,7 +69,7 @@ const MyAppointmentsScreen = () => {
         message:
           (error.response?.data?.errors &&
             error.response?.data?.errors[0]?.msg) ||
-          "Failed to fetch appointments. Please try again.",
+          "Failed to fetch appointment history. Please try again.",
         type: "error",
       });
     } finally {
@@ -92,9 +104,7 @@ const MyAppointmentsScreen = () => {
 
   const renderFilterChips = () => {
     const filters = [
-      { label: "All", value: "all" },
-      { label: "Upcoming", value: "confirmed" },
-      { label: "Pending", value: "pending" },
+      { label: "All History", value: "all" },
       { label: "Completed", value: "completed" },
       { label: "Cancelled", value: "cancelled" },
       { label: "Expired", value: "expired" },
@@ -104,34 +114,18 @@ const MyAppointmentsScreen = () => {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="mb-4 "
+        contentContainerClassName="mb-4"
         contentContainerStyle={{ paddingHorizontal: 16 }}
       >
         {filters.map((filter) => (
           <Chip
             elevated
-            icon={() => {
-              if (activeFilter === filter.value) {
-                return (
-                  <>
-                    <Icon
-                      source="check-all"
-                      size={18}
-                      color={
-                        activeFilter === filter.value ? "#FFFFFF" : "#000000"
-                      }
-                    />
-                  </>
-                );
-              }
-            }}
             key={filter.value}
             selected={activeFilter === filter.value}
             onPress={() => handleFilterChange(filter.value)}
             style={{
               marginRight: 8,
               marginBottom: 4,
-              // height: 32,
               backgroundColor:
                 activeFilter === filter.value
                   ? colors.accent["DEFAULT"]
@@ -152,10 +146,7 @@ const MyAppointmentsScreen = () => {
 
   return (
     <ScreenTransition>
-      <SafeAreaView
-        className="flex-1 bg-white-100"
-        edges={["top", "left", "right"]}
-      >
+      <SafeAreaView className="flex-1 bg-white-100" edges={['top', 'left', 'right']}>
         <Appbar.Header
           className="bg-transparent"
           statusBarHeight={0}
@@ -163,7 +154,7 @@ const MyAppointmentsScreen = () => {
         >
           <Appbar.BackAction onPress={() => router.back()} color="#4A90E2" />
           <Appbar.Content
-            title="My Appointments"
+            title="Appointment History"
             titleStyle={{
               fontFamily: "OpenSans-Bold",
               fontSize: 20,
@@ -171,61 +162,61 @@ const MyAppointmentsScreen = () => {
             }}
           />
           <Appbar.Action
-            icon="history"
+            icon={showAnalytics ? "chart-bar" : "chart-bar-stacked"}
             color="#4A90E2"
-            onPress={() => router.push("/appointments/history")}
-            tooltip="View History & Analytics"
-          />
-          <Appbar.Action
-            icon="refresh"
-            color="#4A90E2"
-            onPress={onRefresh}
-            disabled={refreshing}
+            onPress={() => setShowAnalytics(!showAnalytics)}
           />
         </Appbar.Header>
 
-        <View>{renderFilterChips()}</View>
+        <ScrollView
+          className="flex-1"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#4A90E2"]}
+            />
+          }
+        >
+          {/* Analytics Section */}
+          {showAnalytics && <AppointmentAnalytics />}
 
-        {/* Upcoming Appointments Reminders */}
-        {activeFilter === "confirmed" && (
-          <View className="mb-4">
-            <AppointmentReminders />
+          {/* Filter Chips */}
+          <View className="mt-2">
+            {renderFilterChips()}
           </View>
-        )}
 
-        <View className="flex-1">
-          {loading && !refreshing ? (
-            <View className="flex-1 justify-center items-center">
-              <ActivityIndicator size="large" color="#4A90E2" />
-              <Text className="mt-4 font-osregular text-black-300">
-                Loading your appointments...
-              </Text>
-            </View>
-          ) : filteredAppointments.length === 0 ? (
-            <EmptyAppointments />
-          ) : (
-            <ScrollView
-              className="flex-1 px-4"
-              showsVerticalScrollIndicator={false}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  colors={["#4A90E2"]}
-                />
-              }
-            >
-              {filteredAppointments.map((appointment) => (
-                <AppointmentCard
-                  key={appointment._id}
-                  appointment={appointment}
-                  onCancelSuccess={fetchAppointments}
-                />
-              ))}
-              <View className="h-20" />
-            </ScrollView>
-          )}
-        </View>
+          {/* Appointments List */}
+          <View className="flex-1 px-4">
+            {loading && !refreshing ? (
+              <View className="py-8 justify-center items-center">
+                <ActivityIndicator size="large" color="#4A90E2" />
+                <Text className="mt-4 font-osregular text-black-300">
+                  Loading your appointment history...
+                </Text>
+              </View>
+            ) : filteredAppointments.length === 0 ? (
+              <View className="py-8">
+                <EmptyAppointments message="No appointment history found for the selected filter." />
+              </View>
+            ) : (
+              <View>
+                <Text className="font-ossemibold text-black-400 mb-2">
+                  {filteredAppointments.length} {filteredAppointments.length === 1 ? 'appointment' : 'appointments'} found
+                </Text>
+                
+                {filteredAppointments.map((appointment) => (
+                  <AppointmentCard
+                    key={appointment._id}
+                    appointment={appointment}
+                    onCancelSuccess={fetchAppointments}
+                  />
+                ))}
+                <View className="h-20" />
+              </View>
+            )}
+          </View>
+        </ScrollView>
 
         <StatusBar style="dark" />
       </SafeAreaView>
@@ -233,4 +224,4 @@ const MyAppointmentsScreen = () => {
   );
 };
 
-export default MyAppointmentsScreen;
+export default AppointmentHistoryScreen;

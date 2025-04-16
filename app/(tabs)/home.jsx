@@ -81,7 +81,7 @@ const Home = () => {
     }
     try {
       const response = await axios.get(
-        `${apiUrl}/api/v/auth/getLoggedInData/doctor`,
+        `${apiUrl}/api/v/auth/getLoggedInData/user`,
         {
           headers: {
             Authorization: `Bearer ${authToken}`,

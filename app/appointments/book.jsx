@@ -8,15 +8,12 @@ import {
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Appbar, Chip } from "react-native-paper";
-import { DatePickerModal } from "react-native-paper-dates";
-import { en, registerTranslation } from "react-native-paper-dates";
+import { Appbar, Chip, Modal, Portal, Icon } from "react-native-paper";
 import { cssInterop } from "nativewind";
 import { MotiView } from "moti";
-import { format, parse, isWithinInterval } from "date-fns";
-
-// Register the English locale
-registerTranslation("en", en);
+import { format, addDays } from "date-fns";
+import ScreenTransition from "../../components/Utility/ScreenTransition";
+import { Calendar } from "react-native-calendars";
 
 import colors from "../../constants/colors";
 import { StatusBar } from "expo-status-bar";
@@ -96,12 +93,12 @@ const BookAppointmentScreen = () => {
   const { clinicId } = useLocalSearchParams();
   const [clinics] = useClinicsState();
   const [loading, setLoading] = useState(false);
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const [calendarVisible, setCalendarVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [UserData, setUserData] = useUserDataState();
-  const [toast, setToast] = useToastSate();
+  const [UserData] = useUserDataState();
+  const [, setToast] = useToastSate();
   const [selectedService, setSelectedService] = useState(null);
 
   // Get clinic data from state using useMemo for better performance
@@ -212,14 +209,15 @@ const BookAppointmentScreen = () => {
     }
   };
 
-  const onDismissDatePicker = () => {
-    setDatePickerVisible(false);
+  const onDismissCalendar = () => {
+    setCalendarVisible(false);
   };
 
-  const onConfirmDate = (params) => {
-    setDatePickerVisible(false);
-    setSelectedDate(params.date);
-    fetchAvailableSlots(params.date);
+  const onSelectDate = (day) => {
+    const selectedDate = new Date(day.dateString);
+    setCalendarVisible(false);
+    setSelectedDate(selectedDate);
+    fetchAvailableSlots(selectedDate);
   };
 
   const handleBookAppointment = async () => {
@@ -289,13 +287,17 @@ const BookAppointmentScreen = () => {
       // Check if the error is due to an existing appointment (409 Conflict)
       if (
         error.response?.status === 409 ||
-        (error.response?.data?.errors && error.response?.data?.errors[0]?.msg?.includes("time slot is already booked"))
+        (error.response?.data?.errors &&
+          error.response?.data?.errors[0]?.msg?.includes(
+            "time slot is already booked"
+          ))
       ) {
         // Show toast notification instead of navigating to failure screen
         setToast({
           visible: true,
           message:
-            (error.response?.data?.errors && error.response?.data?.errors[0]?.msg) ||
+            (error.response?.data?.errors &&
+              error.response?.data?.errors[0]?.msg) ||
             "This time slot is already booked. Please select another time.",
           type: "error",
         });
@@ -305,7 +307,8 @@ const BookAppointmentScreen = () => {
           pathname: "/appointments/failure",
           params: {
             message:
-              (error.response?.data?.errors && error.response?.data?.errors[0]?.msg) ||
+              (error.response?.data?.errors &&
+                error.response?.data?.errors[0]?.msg) ||
               "Failed to book appointment. Please try again.",
           },
         });
@@ -332,7 +335,8 @@ const BookAppointmentScreen = () => {
   // console.log("clinicData", clinicData.services);
 
   return (
-    <SafeAreaView className="flex-1 bg-white-100">
+    <ScreenTransition>
+      <SafeAreaView className="flex-1 bg-white-100" edges={['top', 'left', 'right']}>
       <Appbar.Header
         className="bg-transparent"
         statusBarHeight={0}
@@ -397,7 +401,7 @@ const BookAppointmentScreen = () => {
           {/* Date Selection - Using DateSelector component */}
           <DateSelector
             selectedDate={selectedDate}
-            onPress={() => setDatePickerVisible(true)}
+            onPress={() => setCalendarVisible(true)}
             formatDate={formatDate}
           />
 
@@ -480,7 +484,7 @@ const BookAppointmentScreen = () => {
                           : "border-white-200"
                       }`}
                     >
-                      <View className="flex-row justify-between items-center">
+                      <View className="flex-row justify-between">
                         <View className="flex-1">
                           <Text className="font-ossemibold text-black-400">
                             {service.name}
@@ -492,22 +496,22 @@ const BookAppointmentScreen = () => {
                           )}
                           <View className="flex-row mt-2">
                             {service.duration && (
-                              <View className="bg-secondary-100/30 px-2 py-1 rounded-md mr-2">
-                                <Text className="font-osregular text-xs text-secondary-400">
+                              <View className="bg-secondary-100/70 px-2 py-1 rounded-md mr-2">
+                                <Text className="font-osregular text-xs text-secondary-300">
                                   {service.duration} min
                                 </Text>
                               </View>
                             )}
                             {service.category && (
-                              <View className="bg-secondary-100/30 px-2 py-1 rounded-md">
-                                <Text className="font-osregular text-xs text-secondary-400">
+                              <View className="bg-secondary-100/70 px-2 py-1 rounded-md">
+                                <Text className="font-osregular text-xs text-secondary-300">
                                   {service.category}
                                 </Text>
                               </View>
                             )}
                           </View>
                         </View>
-                        <Text className="font-pbold text-lg text-secondary-400">
+                        <Text className="font-pbold text-lg text-secondary-400 mx-2">
                           ₹{service.price}
                         </Text>
                       </View>
@@ -578,21 +582,98 @@ const BookAppointmentScreen = () => {
         </View>
       </View>
 
-      {/* Date Picker Modal */}
-      <DatePickerModal
-        locale="en"
-        mode="single"
-        visible={datePickerVisible}
-        onDismiss={onDismissDatePicker}
-        date={selectedDate}
-        onConfirm={onConfirmDate}
-        validRange={{
-          startDate: new Date(new Date().setHours(0, 0, 0, 0)), // Allow selection from today
-        }}
-      />
+      {/* Calendar Modal */}
+      <Portal>
+        <Modal
+          visible={calendarVisible}
+          onDismiss={onDismissCalendar}
+          contentContainerStyle={{
+            backgroundColor: "white",
+            padding: 20,
+            margin: 20,
+            borderRadius: 16,
+            elevation: 5,
+          }}
+        >
+          <View className="mb-4">
+            <View className="flex-row justify-center mb-4 gap-1">
+              <Icon
+                source="calendar-month"
+                size={24}
+                color="#4A90E2"
+              />
+              <Text className="font-pbold text-lg text-black-400">
+                Select Appointment Date
+              </Text>
+            </View>
+
+            <Calendar
+              minDate={format(new Date(), "yyyy-MM-dd")}
+              maxDate={format(addDays(new Date(), 30), "yyyy-MM-dd")}
+              onDayPress={onSelectDate}
+              markedDates={{
+                [selectedDate ? format(selectedDate, "yyyy-MM-dd") : ""]: {
+                  selected: true,
+                  selectedColor: "#4A90E2",
+                },
+              }}
+              theme={{
+                todayTextColor: "#4A90E2",
+                arrowColor: "#4A90E2",
+                dotColor: "#4A90E2",
+                selectedDayBackgroundColor: "#4A90E2",
+                selectedDayTextColor: "#ffffff",
+                textDayFontFamily: "OpenSans-Regular",
+                textMonthFontFamily: "OpenSans-Bold",
+                textDayHeaderFontFamily: "OpenSans-SemiBold",
+                dayTextColor: "#333333",
+                monthTextColor: "#333333",
+                textMonthFontSize: 16,
+                textDayFontSize: 14,
+                calendarBackground: "#ffffff",
+                textSectionTitleColor: "#4A90E2",
+                selectedDotColor: "#ffffff",
+                disabledArrowColor: "#d9e1e8",
+                monthTextColor: "#4A90E2",
+              }}
+            />
+
+            {selectedDate && (
+              <View className="mt-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
+                <Text className="font-ossemibold text-black-400 text-center">
+                  Selected: {format(selectedDate, "EEEE, MMMM d, yyyy")}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <View className="flex-row gap-2">
+            <TouchableOpacity
+              onPress={onDismissCalendar}
+              className="flex-1 bg-gray-200 py-3 rounded-xl items-center"
+            >
+              <Text className="font-ossemibold text-gray-700">Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                if (selectedDate) {
+                  onDismissCalendar();
+                  fetchAvailableSlots(selectedDate);
+                }
+              }}
+              className="flex-1 bg-blue-500 py-3 rounded-xl items-center"
+              disabled={!selectedDate}
+            >
+              <Text className="font-ossemibold text-white-100">Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </Portal>
 
       <StatusBar style="dark" />
     </SafeAreaView>
+    </ScreenTransition>
   );
 };
 

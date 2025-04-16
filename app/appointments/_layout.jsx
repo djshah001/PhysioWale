@@ -1,12 +1,14 @@
 import { Stack } from "expo-router";
 import React from "react";
+import { defaultScreenOptions } from "../../constants/navigationConfig";
 
 const AppointmentsLayout = () => {
   return (
     <Stack
       screenOptions={{
-        headerShown: false,
-        animation: "slide_from_right",
+        ...defaultScreenOptions,
+        gestureEnabled: true,
+        gestureDirection: "horizontal",
       }}
     >
       <Stack.Screen
@@ -29,6 +31,24 @@ const AppointmentsLayout = () => {
       />
       <Stack.Screen
         name="my-appointments"
+        options={{
+          presentation: "card",
+        }}
+      />
+      <Stack.Screen
+        name="history"
+        options={{
+          presentation: "card",
+        }}
+      />
+      <Stack.Screen
+        name="reschedule"
+        options={{
+          presentation: "card",
+        }}
+      />
+      <Stack.Screen
+        name="[id]"
         options={{
           presentation: "card",
         }}

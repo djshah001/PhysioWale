@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Share,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Appbar, Divider, IconButton, Badge } from "react-native-paper";
@@ -19,6 +20,9 @@ import { format } from "date-fns";
 
 import { StatusBar } from "expo-status-bar";
 import CustomBtn from "../../components/CustomBtn";
+import ScreenTransition from "../../components/Utility/ScreenTransition";
+import AppointmentNotes from "../../components/Appointments/AppointmentNotes";
+import AppointmentFeedback from "../../components/Appointments/AppointmentFeedback";
 import colors from "../../constants/colors";
 
 cssInterop(Appbar, { className: "style" });
@@ -35,6 +39,8 @@ const getStatusClassName = (status) => {
       return "bg-red-500";
     case "rejected":
       return "bg-red-500";
+    case "expired":
+      return "bg-gray-500";
     default:
       return "bg-gray-500";
   }
@@ -52,6 +58,8 @@ const getStatusLabel = (status) => {
       return "Cancelled";
     case "rejected":
       return "Rejected";
+    case "expired":
+      return "Expired";
     default:
       return status;
   }
@@ -155,14 +163,18 @@ const AppointmentDetailScreen = () => {
     );
   };
 
-  // Check if appointment can be cancelled (not completed or already cancelled)
+  // Check if appointment can be cancelled or rescheduled (not completed, cancelled, rejected, or expired)
   const canCancel =
     appointment &&
-    !["completed", "cancelled", "rejected"].includes(appointment.status);
+    !["completed", "cancelled", "rejected", "expired"].includes(appointment.status);
+
+  const canReschedule =
+    appointment &&
+    !["completed", "cancelled", "rejected", "expired"].includes(appointment.status);
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-white-100 justify-center items-center">
+      <SafeAreaView className="flex-1 bg-white-100 justify-center items-center" edges={['top', 'left', 'right']}>
         <ActivityIndicator size="large" color={colors.secondary[300]} />
         <Text className="mt-4 font-osregular text-black-300">
           Loading appointment details...
@@ -173,7 +185,7 @@ const AppointmentDetailScreen = () => {
 
   if (!appointment) {
     return (
-      <SafeAreaView className="flex-1 bg-white-100 justify-center items-center">
+      <SafeAreaView className="flex-1 bg-white-100 justify-center items-center" edges={['top', 'left', 'right']}>
         <Text className="font-pbold text-lg">Appointment not found</Text>
         <TouchableOpacity
           onPress={() => router.back()}
@@ -189,8 +201,10 @@ const AppointmentDetailScreen = () => {
   const appointmentDate = new Date(appointment.date);
   const formattedDate = format(appointmentDate, "EEEE, MMMM d, yyyy");
 
+
   return (
-    <SafeAreaView className="flex-1 bg-white-100">
+    <ScreenTransition>
+      <SafeAreaView className="flex-1 bg-white-100" edges={['top', 'left', 'right']}>
       <Appbar.Header
         className="bg-transparent"
         statusBarHeight={0}
@@ -208,24 +222,23 @@ const AppointmentDetailScreen = () => {
       </Appbar.Header>
 
       <ScrollView className="flex-1 px-4">
-        {/* Status Badge */}
-        <View className="items-center my-4">
-          <Badge
-            size={30}
-            style={{
-              color: "white",
-              fontFamily: "OpenSans-SemiBold",
-              fontSize: 14,
-              paddingHorizontal: 12,
-            }}
-            className={getStatusClassName(appointment.status)}
-          >
-            {getStatusLabel(appointment.status)}
-          </Badge>
-        </View>
-
         {/* Clinic Image */}
         <View className="h-48 w-full rounded-xl overflow-hidden mb-4">
+          {/* Status Badge */}
+          <View className="absolute top-3 right-3 z-10 ">
+            <Badge
+              size={30}
+              style={{
+                color: "white",
+                fontFamily: "OpenSans-SemiBold",
+                fontSize: 14,
+                paddingHorizontal: 12,
+              }}
+              className={`${getStatusClassName(appointment.status)} capitalize`}
+            >
+              {getStatusLabel(appointment.status)}
+            </Badge>
+          </View>
           <Image
             source={{ uri: appointment.clinicId?.images?.[0] }}
             contentFit="cover"
@@ -292,14 +305,16 @@ const AppointmentDetailScreen = () => {
           <Divider className="my-3" />
 
           {/* Service Details */}
-          <View className="bg-secondary-100/20 p-3 rounded-lg mt-2">
-            <Text className="font-ossemibold text-black-400">
-              {appointment.serviceId?.name}
-            </Text>
+          <View className="bg-secondary-100/20 p-3 rounded-lg mt-3">
             <View className="flex-row justify-between mt-1">
-              <Text className="font-osregular text-sm text-black-300">
-                {appointment.serviceId?.duration} min
-              </Text>
+              <View className="flex-1">
+                <Text className="font-ossemibold text-black-400">
+                  {appointment.serviceId?.name}
+                </Text>
+                <Text className="font-osregular text-sm text-black-300">
+                  {appointment.serviceId?.duration} min
+                </Text>
+              </View>
               <Text className="font-pbold text-blue-500">
                 ₹{appointment.serviceId?.price}
               </Text>
@@ -316,9 +331,36 @@ const AppointmentDetailScreen = () => {
           )}
         </View>
 
+        {/* Personal Notes */}
+        <AppointmentNotes
+          appointment={appointment}
+          onNotesUpdated={(updatedAppointment) => setAppointment(updatedAppointment)}
+        />
+
+        {/* Feedback Section - Only show for completed appointments */}
+        {appointment.status === "completed" && (
+          <AppointmentFeedback
+            appointment={appointment}
+            onFeedbackSubmitted={(updatedAppointment) => setAppointment(updatedAppointment)}
+          />
+        )}
+
         {/* Action Buttons */}
-        {canCancel && (
-          <View className="mb-8">
+        <View className="mb-4 space-y-4 gap-4">
+          {canReschedule && (
+            <CustomBtn
+              title="Reschedule Appointment"
+              iconName="calendar-clock"
+              className="rounded-xl"
+              bgColor="#4A90E2"
+              handlePress={() => router.push({
+                pathname: '/appointments/reschedule',
+                params: { appointmentId: appointment._id }
+              })}
+            />
+          )}
+
+          {canCancel && (
             <CustomBtn
               title="Cancel Appointment"
               iconName="close-circle-outline"
@@ -327,12 +369,28 @@ const AppointmentDetailScreen = () => {
               handlePress={handleCancelAppointment}
               loading={loading}
             />
-          </View>
-        )}
+          )}
+
+          <CustomBtn
+            title="Share Appointment Details"
+            iconName="share-variant"
+            className="rounded-xl"
+            bgColor="#9C27B0"
+            handlePress={() => {
+              const message = `My appointment details:\n\nClinic: ${appointment.clinicId?.name}\nDoctor: Dr. ${appointment.doctorId?.name}\nService: ${appointment.serviceId?.name}\nDate: ${formattedDate}\nTime: ${appointment.time}\nStatus: ${getStatusLabel(appointment.status)}`;
+
+              Share.share({
+                message,
+                title: 'My Appointment Details',
+              });
+            }}
+          />
+        </View>
       </ScrollView>
 
       <StatusBar style="dark" />
     </SafeAreaView>
+    </ScreenTransition>
   );
 };
 

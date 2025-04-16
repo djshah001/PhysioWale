@@ -1,9 +1,8 @@
 import React, { memo } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { IconButton } from "react-native-paper";
+import { Icon } from "react-native-paper";
 import { MotiView } from "moti";
 import { cssInterop } from "nativewind";
-import colors from "../../constants/colors";
 
 cssInterop(MotiView, { className: "style" });
 
@@ -21,21 +20,20 @@ const DateSelector = ({ selectedDate, onPress, formatDate }) => {
         onPress={onPress}
         className="bg-white-300 rounded-xl p-4 shadow-sm mb-6 flex-row justify-between items-center border border-secondary-100/20"
       >
-        <View className="flex-row items-center">
-          <IconButton 
-            icon="calendar" 
-            size={24} 
-            iconColor={colors.secondary[300]}
-            style={{ margin: 0, marginRight: 8 }}
+        <View className="flex-row gap-1">
+          <Icon
+            source="calendar"
+            size={24}
+            color="#4A90E2"
           />
           <Text className="font-osregular text-md">
             {formatDate(selectedDate)}
           </Text>
         </View>
-        <IconButton 
-          icon="chevron-down" 
-          size={24} 
-          iconColor={colors.black[300]}
+        <Icon
+          source="chevron-down"
+          size={24}
+          color="#333333"
         />
       </TouchableOpacity>
     </MotiView>

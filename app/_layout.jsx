@@ -1,18 +1,17 @@
 import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 
-import { Slot, SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
+import { defaultScreenOptions } from "../constants/navigationConfig";
 import { useFonts } from "expo-font";
 
 import { RecoilRoot } from "recoil";
 
 import "../global.css";
 import { PaperProvider, DefaultTheme } from "react-native-paper";
-import colors from "../constants/colors";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import CustomToast from "../components/ReUsables/CustomToast";
 import { StatusBar } from "expo-status-bar";
-import CustomActionSheet from "../components/ReUsables/CustomActionSheet";
 import { SheetProvider } from "react-native-actions-sheet";
 
 const theme = {
@@ -62,7 +61,12 @@ const Rootlayout = () => {
       <PaperProvider theme={theme}>
         <GestureHandlerRootView style={{ flex: 1 }}>
           <SheetProvider>
-            <Slot />
+            <Stack screenOptions={defaultScreenOptions}>
+              <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
+              <Stack.Screen name="appointments" />
+              <Stack.Screen name="index" options={{ animation: "fade" }} />
+            </Stack>
+
             <CustomToast />
             <StatusBar style="auto" />
             {/* <CustomActionSheet /> */}

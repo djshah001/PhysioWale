@@ -114,16 +114,16 @@ const ClinicScreen = () => {
   }, []);
 
   // Loading state
-  if (isLoading) {
-    return (
-      <View className="flex-1 justify-center items-center bg-white-300">
-        <ActivityIndicator size="large" color={colors.secondary[300]} />
-        <Text className="text-lg font-pbold mt-4 text-black-400">
-          Loading clinic details...
-        </Text>
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View className="flex-1 justify-center items-center bg-white-300">
+  //       <ActivityIndicator size="large" color={colors.secondary[300]} />
+  //       <Text className="text-lg font-pbold mt-4 text-black-400">
+  //         Loading clinic details...
+  //       </Text>
+  //     </View>
+  //   );
+  // }
 
   // Error state
   if (!ClinicData) {
