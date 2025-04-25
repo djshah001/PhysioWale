@@ -96,11 +96,7 @@ const ClinicItem = ({ clinic, index, IsLoading }) => {
         animate={{ backgroundColor: "#f7f8f8" }}
         className="rounded-3xl mb-4 gap-4"
       >
-        <MotiView
-          transition={{ type: "timing" }}
-          animate={{ backgroundColor: "#f7f8f8" }}
-          className="w-full rounded-3xl mb-4 gap-5"
-        >
+        <View className="w-full rounded-3xl mb-4 gap-5">
           <Skeleton
             colorMode={"light"}
             width={"100%"}
@@ -113,7 +109,7 @@ const ClinicItem = ({ clinic, index, IsLoading }) => {
             height={280}
             radius={30}
           />
-        </MotiView>
+        </View>
       </MotiView>
     ),
     []
@@ -253,7 +249,7 @@ const ClinicItem = ({ clinic, index, IsLoading }) => {
                 href={{
                   pathname: `/clinics/${clinic._id}`,
                   params: {
-                    clinicId: clinic._id,
+                    id: clinic._id,
                     distance: distance,
                   },
                 }}

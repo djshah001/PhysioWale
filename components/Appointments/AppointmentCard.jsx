@@ -138,10 +138,10 @@ const AppointmentCard = ({ appointment, onCancelSuccess }) => {
         <View className="mb-2">
           <View className="flex-row justify-between items-start">
             <View className="flex-1 pr-2">
-              <Text className="font-pbold text-lg text-black-400">
+              <Text className="font-pbold text-lg text-black-800">
                 {appointment.clinicId?.name}
               </Text>
-              <Text className="font-osregular text-sm text-black-300">
+              <Text className="font-osregular text-sm text-black-600">
                 Dr. {appointment.doctorId?.name}
               </Text>
             </View>
@@ -155,7 +155,7 @@ const AppointmentCard = ({ appointment, onCancelSuccess }) => {
             size={20}
             color="#4A90E2"
           />
-          <Text className="font-ossemibold text-black-300 text-sm">
+          <Text className="font-ossemibold text-black-600 text-sm">
             {formattedDate}
           </Text>
         </View>
@@ -166,7 +166,7 @@ const AppointmentCard = ({ appointment, onCancelSuccess }) => {
             size={20}
             color="#4A90E2"
           />
-          <Text className="font-ossemibold text-black-300 text-sm">
+          <Text className="font-ossemibold text-black-600 text-sm">
             {appointment.time}
           </Text>
         </View>
@@ -175,10 +175,10 @@ const AppointmentCard = ({ appointment, onCancelSuccess }) => {
         <View className="bg-blue-50 p-4 rounded-xl mt-4 shadow-sm border border-blue-100">
           <View className="flex-row justify-between items-center">
             <View className="flex-1">
-              <Text className="font-ossemibold text-black-400">
+              <Text className="font-ossemibold text-black-800">
                 {appointment.serviceId?.name}
               </Text>
-              <Text className="font-osregular text-sm text-black-300 mt-1">
+              <Text className="font-osregular text-sm text-black-600 mt-1">
                 {appointment.serviceId?.duration} min
               </Text>
             </View>

@@ -12,7 +12,6 @@ import { Appbar, Chip, Modal, Portal, Icon } from "react-native-paper";
 import { cssInterop } from "nativewind";
 import { MotiView } from "moti";
 import { format, addDays } from "date-fns";
-import ScreenTransition from "../../components/Utility/ScreenTransition";
 import { Calendar } from "react-native-calendars";
 
 import colors from "../../constants/colors";
@@ -32,8 +31,12 @@ import { Image } from "expo-image";
 import { CustomChip } from "../../components/ReUsables/CustomChip";
 import axios from "axios";
 import { apiUrl } from "../../components/Utility/Repeatables";
+import GradientCard from "../../components/UI/GradientCard";
 
 cssInterop(Appbar, { className: "style" });
+cssInterop(Modal, { className: "style" });
+cssInterop(Icon, { className: "style" });
+cssInterop(Portal, { className: "style" });
 
 // Helper function to convert time string to minutes for comparison
 const timeToMinutes = (timeString) => {
@@ -90,7 +93,9 @@ const filterAvailableSlots = (slots, date) => {
 };
 
 const BookAppointmentScreen = () => {
-  const { clinicId } = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const clinicId = params.clinicId;
+  const doctorId = params.doctorId;
   const [clinics] = useClinicsState();
   const [loading, setLoading] = useState(false);
   const [calendarVisible, setCalendarVisible] = useState(false);
@@ -156,7 +161,7 @@ const BookAppointmentScreen = () => {
         {
           params: {
             clinicId: clinicId,
-            doctorId: clinicData?.doctor?._id,
+            doctorId: doctorId || clinicData?.doctor?._id,
             date: formattedDate,
           },
           headers: {
@@ -237,7 +242,7 @@ const BookAppointmentScreen = () => {
       // Prepare appointment data
       const appointmentData = {
         clinicId,
-        doctorId: clinicData?.doctor?._id,
+        doctorId: doctorId || clinicData?.doctor?._id,
         date: format(selectedDate, "yyyy-MM-dd"),
         time: selectedSlot.time,
         serviceId: selectedService._id,
@@ -335,8 +340,10 @@ const BookAppointmentScreen = () => {
   // console.log("clinicData", clinicData.services);
 
   return (
-    <ScreenTransition>
-      <SafeAreaView className="flex-1 bg-white-100" edges={['top', 'left', 'right']}>
+    <SafeAreaView
+      className="flex-1 bg-white-100"
+      edges={["top", "left", "right"]}
+    >
       <Appbar.Header
         className="bg-transparent"
         statusBarHeight={0}
@@ -359,11 +366,17 @@ const BookAppointmentScreen = () => {
       <View className="flex-1">
         <ScrollView className="flex-1 px-4">
           {/* Clinic Info Card */}
-          <MotiView
-            from={{ opacity: 0, translateY: 10 }}
-            animate={{ opacity: 1, translateY: 0 }}
-            transition={{ type: "timing", duration: 500 }}
-            className="bg-white-300 rounded-xl p-4 shadow-md mb-6 border border-secondary-100/20"
+
+          <GradientCard
+            variant={"secondary"}
+            style={{ marginBottom: 16 }}
+            contentStyle={{ padding: 16 }}
+            animationProps={{
+              from: { opacity: 0, translateY: 10 },
+              animate: { opacity: 1, translateY: 0 },
+              transition: { type: "timing", duration: 500 },
+            }}
+            className=" shadow-xl shadow-secondary-300 "
           >
             <View className="flex-row items-center mb-2">
               <View className="w-10 h-10 rounded-full bg-secondary-100 items-center justify-center mr-3">
@@ -377,15 +390,15 @@ const BookAppointmentScreen = () => {
                 />
               </View>
               <View className="flex-1">
-                <Text className="font-pbold text-xl text-black-400">
+                <Text className="font-pbold text-xl text-white-200 leading-6">
                   {clinicData?.name}
                 </Text>
-                <Text className="font-osregular text-sm text-black-300">
+                <Text className="font-osregular text-sm text-white-300">
                   Dr. {clinicData?.doctor?.name}
                 </Text>
               </View>
             </View>
-            <Text className="font-osregular text-sm text-black-300 mb-2">
+            <Text className="font-osregular text-sm text-white-300 mb-2">
               {clinicData?.address}, {clinicData?.city}
             </Text>
 
@@ -396,7 +409,7 @@ const BookAppointmentScreen = () => {
                 ))}
               </View>
             )}
-          </MotiView>
+          </GradientCard>
 
           {/* Date Selection - Using DateSelector component */}
           <DateSelector
@@ -411,14 +424,14 @@ const BookAppointmentScreen = () => {
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "timing", duration: 500, delay: 200 }}
           >
-            <Text className="font-pbold text-lg text-black-400 mb-2">
+            <Text className="font-pbold text-lg text-black-800 mb-2">
               Available Time Slots
             </Text>
 
             {loading ? (
               <View className="bg-white-300 rounded-xl p-6 shadow-sm mb-6 items-center border border-secondary-100/20">
                 <ActivityIndicator size="small" color={colors.secondary[300]} />
-                <Text className="font-osregular text-md text-black-300 mt-2">
+                <Text className="font-osregular text-md text-black-600 mt-2">
                   Loading available slots...
                 </Text>
               </View>
@@ -463,7 +476,7 @@ const BookAppointmentScreen = () => {
             transition={{ type: "timing", duration: 500, delay: 300 }}
             className="mb-6"
           >
-            <Text className="font-pbold text-lg text-black-400 mb-2">
+            <Text className="font-pbold text-lg text-black-800 mb-2">
               Select Service
             </Text>
             <View className="bg-white-300 rounded-xl p-4 shadow-sm border border-secondary-100/20">
@@ -486,11 +499,11 @@ const BookAppointmentScreen = () => {
                     >
                       <View className="flex-row justify-between">
                         <View className="flex-1">
-                          <Text className="font-ossemibold text-black-400">
+                          <Text className="font-ossemibold text-black-800">
                             {service.name}
                           </Text>
                           {service.description && (
-                            <Text className="font-osregular text-sm text-black-300 mt-1">
+                            <Text className="font-osregular text-sm text-black-600 mt-1">
                               {service.description}
                             </Text>
                           )}
@@ -519,7 +532,7 @@ const BookAppointmentScreen = () => {
                   ))}
                 </ScrollView>
               ) : (
-                <Text className="font-osregular text-center text-black-300 py-4">
+                <Text className="font-osregular text-center text-black-600 py-4">
                   No services available for this clinic
                 </Text>
               )}
@@ -532,7 +545,7 @@ const BookAppointmentScreen = () => {
           {(selectedSlot || selectedService) && (
             <View className="mb-3 px-2">
               <View className="mb-2">
-                <Text className="font-osregular text-black-300 mb-1">
+                <Text className="font-osregular text-black-600 mb-1">
                   Selected Time:
                 </Text>
                 {selectedSlot ? (
@@ -543,14 +556,14 @@ const BookAppointmentScreen = () => {
                     </Text>
                   </View>
                 ) : (
-                  <Text className="font-osregular text-black-300/50 italic">
+                  <Text className="font-osregular text-black-600/50 italic">
                     No time slot selected
                   </Text>
                 )}
               </View>
 
               <View>
-                <Text className="font-osregular text-black-300 mb-1">
+                <Text className="font-osregular text-black-600 mb-1">
                   Selected Service:
                 </Text>
                 {selectedService ? (
@@ -560,7 +573,7 @@ const BookAppointmentScreen = () => {
                     </Text>
                   </View>
                 ) : (
-                  <Text className="font-osregular text-black-300/50 italic">
+                  <Text className="font-osregular text-black-600/50 italic">
                     No service selected
                   </Text>
                 )}
@@ -597,12 +610,8 @@ const BookAppointmentScreen = () => {
         >
           <View className="mb-4">
             <View className="flex-row justify-center mb-4 gap-1">
-              <Icon
-                source="calendar-month"
-                size={24}
-                color="#4A90E2"
-              />
-              <Text className="font-pbold text-lg text-black-400">
+              <Icon source="calendar-month" size={24} color="#4A90E2" />
+              <Text className="font-pbold text-lg text-black-800">
                 Select Appointment Date
               </Text>
             </View>
@@ -640,7 +649,7 @@ const BookAppointmentScreen = () => {
 
             {selectedDate && (
               <View className="mt-4 bg-blue-50 p-3 rounded-lg border border-blue-100">
-                <Text className="font-ossemibold text-black-400 text-center">
+                <Text className="font-ossemibold text-black-800 text-center">
                   Selected: {format(selectedDate, "EEEE, MMMM d, yyyy")}
                 </Text>
               </View>
@@ -673,7 +682,6 @@ const BookAppointmentScreen = () => {
 
       <StatusBar style="dark" />
     </SafeAreaView>
-    </ScreenTransition>
   );
 };
 

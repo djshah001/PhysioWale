@@ -149,7 +149,7 @@ const AppointmentAnalytics = () => {
             mode={timeframe === "month" ? "flat" : "outlined"}
             selected={timeframe === "month"}
             onPress={() => handleTimeframeChange("month")}
-            className="h-8"
+            // className="h-8"
             textStyle={{ fontFamily: "OpenSans-Medium", fontSize: 12 }}
             compact
             style={{
@@ -173,7 +173,6 @@ const AppointmentAnalytics = () => {
             mode={timeframe === "year" ? "flat" : "outlined"}
             selected={timeframe === "year"}
             onPress={() => handleTimeframeChange("year")}
-            className="h-8"
             textStyle={{ fontFamily: "OpenSans-Medium", fontSize: 12 }}
             compact
             style={{
@@ -196,7 +195,6 @@ const AppointmentAnalytics = () => {
             mode={timeframe === "all" ? "flat" : "outlined"}
             selected={timeframe === "all"}
             onPress={() => handleTimeframeChange("all")}
-            className="h-8"
             textStyle={{ fontFamily: "OpenSans-Medium", fontSize: 12 }}
             compact
             style={{

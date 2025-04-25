@@ -75,26 +75,26 @@ const HealthMetrics = () => {
   };
 
   return (
-    <View className="bg-white-100 rounded-2xl p-4 shadow-sm shadow-black-200 mb-4">
-      <Text className="font-pbold text-lg mb-2">Health Metrics</Text>
+    <View className=" items-center">
+      {/* <Text className="font-pbold text-lg mb-2">Health Metrics</Text> */}
       
-      <View className="flex-row justify-between mb-3">
-        <View className="items-center flex-1">
-          <Text className="font-pregular text-gray-500">Height</Text>
+      <View className="flex-row gap-4 mb-3 ">
+        <View className="items-center">
+          <Text className="font-pregular text-gray-800">Height</Text>
           <Text className="font-pmedium text-lg">
             {userData.height ? `${userData.height} cm` : '-'}
           </Text>
         </View>
         
-        <View className="items-center flex-1">
-          <Text className="font-pregular text-gray-500">Weight</Text>
+        <View className="items-center">
+          <Text className="font-pregular text-gray-800">Weight</Text>
           <Text className="font-pmedium text-lg">
             {userData.weight ? `${userData.weight} kg` : '-'}
           </Text>
         </View>
         
-        <View className="items-center flex-1">
-          <Text className="font-pregular text-gray-500">BMI</Text>
+        <View className="items-center">
+          <Text className="font-pregular text-gray-800">BMI</Text>
           <Text className={`font-pmedium text-lg ${getBmiColor()}`}>
             {bmi ? bmi.bmi : '-'}
           </Text>

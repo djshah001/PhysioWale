@@ -50,53 +50,53 @@ const AppointmentSuccessScreen = () => {
             />
           </View>
 
-          <Text className="font-pbold text-2xl text-black-400 mb-2 text-center">
+          <Text className="font-pbold text-2xl text-black-800 mb-2 text-center">
             Appointment Confirmed!
           </Text>
 
-          <Text className="font-osregular text-md text-black-300 mb-8 text-center">
+          <Text className="font-osregular text-md text-black-500 mb-8 text-center">
             Your appointment has been successfully booked.
           </Text>
 
           <View className="bg-white-300 rounded-xl p-6 shadow-md w-full mb-6 border border-secondary-100/20">
             <View className="mb-4">
-              <Text className="font-osregular text-sm text-black-300">
+              <Text className="font-osregular text-sm text-black-500">
                 Clinic
               </Text>
-              <Text className="font-ossemibold text-lg text-black-400">
+              <Text className="font-ossemibold text-lg text-black-800">
                 {clinicName}
               </Text>
             </View>
 
             <View className="mb-4">
-              <Text className="font-osregular text-sm text-black-300">
+              <Text className="font-osregular text-sm text-black-500">
                 Doctor
               </Text>
-              <Text className="font-ossemibold text-lg text-black-400">
+              <Text className="font-ossemibold text-lg text-black-800">
                 Dr. {doctorName}
               </Text>
             </View>
 
             <View className="mb-4">
-              <Text className="font-osregular text-sm text-black-300">
+              <Text className="font-osregular text-sm text-black-500">
                 Date
               </Text>
-              <Text className="font-ossemibold text-lg text-black-400">
+              <Text className="font-ossemibold text-lg text-black-800">
                 {date}
               </Text>
             </View>
 
             <View>
-              <Text className="font-osregular text-sm text-black-300">
+              <Text className="font-osregular text-sm text-black-500">
                 Time
               </Text>
-              <Text className="font-ossemibold text-lg text-black-400">
+              <Text className="font-ossemibold text-lg text-black-800">
                 {time}
               </Text>
             </View>
           </View>
 
-          <Text className="font-osregular text-sm text-black-300 mb-4 text-center">
+          <Text className="font-osregular text-sm text-black-500 mb-4 text-center">
             Appointment ID: {appointmentId}
           </Text>
         </MotiView>
@@ -108,7 +108,7 @@ const AppointmentSuccessScreen = () => {
           title="View My Appointments"
           iconName="calendar-check"
           className="rounded-xl mb-3"
-          handlePress={() => router.push("/appointments")}
+          handlePress={() => router.push("/appointments/my-appointments")}
         />
 
         <CustomBtn

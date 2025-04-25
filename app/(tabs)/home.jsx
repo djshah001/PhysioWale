@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useFocusEffect } from "@react-navigation/native";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   useUserDataState,
@@ -56,7 +56,7 @@ const Home = () => {
         <Text className="text-sm leading-4 font-bold text-gray-600">
           Hi, Welcome Back!
         </Text>
-        <Text className="text-xl leading-6 font-pbold text-black-200">
+        <Text className="text-xl leading-6 font-pbold text-black-700">
           {UserData?.name}
         </Text>
       </View>
@@ -194,7 +194,7 @@ const Home = () => {
       <>
         <Appbar.Action
           icon="bell-outline"
-          color={colors.black[300]}
+          color={colors.black[700]}
           onPress={() => router.push("/notifications")}
         />
       </>
@@ -208,13 +208,37 @@ const Home = () => {
       <View className="gap-4">
         <HorList data={HorizontalList} />
         <IconMenu />
-        <View className="px-4 mt-2">
-          <Text className="text-xl font-pbold text-black-200">
-            Nearby Clinics
-          </Text>
-          <Text className="text-sm font-oslight text-gray-600">
-            Find clinics near your location
-          </Text>
+        <View className="px-4 flex-row justify-between items-center">
+          <View className="flex-row">
+            {/* <View className="bg-secondary-100 rounded-full p-3 mr-3">
+              <Icon
+                source="hospital-building"
+                size={22}
+                color={colors.secondary[300]}
+              />
+            </View> */}
+
+            <View className="">
+              <Text className="text-xl font-pbold text-black-700">
+                Nearby Clinics
+              </Text>
+              {/* <Text className="text-sm font-oslight text-gray-600">
+                Find clinics near your location
+              </Text> */}
+            </View>
+          </View>
+          <Link href="/clinics" className="flex-row items-center" asChild>
+            <View className="">
+              <Text className="text-secondary-300 font-ossemibold text-md capitalize">
+                view all
+              </Text>
+              <Icon
+                source="chevron-right"
+                size={20}
+                color={colors.secondary[300]}
+              />
+            </View>
+          </Link>
         </View>
       </View>
     ),
@@ -229,6 +253,8 @@ const Home = () => {
 
   return (
     <SafeAreaView className="bg-white-300 flex-1">
+      <StatusBar style="inverted" />
+
       <Appbar.Header
         // mode="center-aligned"
         statusBarHeight={0}
@@ -246,7 +272,7 @@ const Home = () => {
           )}
           estimatedItemSize={400}
           keyExtractor={(item) => item._id}
-          contentContainerStyle={{ paddingBottom: 60, paddingHorizontal: 16 }}
+          contentContainerStyle={{ paddingBottom: 90, paddingHorizontal: 16 }}
           showsVerticalScrollIndicator={false}
           onRefresh={handleRefresh}
           refreshing={refreshing}
@@ -259,7 +285,7 @@ const Home = () => {
                   size={80}
                   color={colors.blueishGreen[500]}
                 />
-                <Text className="text-2xl text-center text-black-200 font-pbold mt-6 mb-2">
+                <Text className="text-2xl text-center text-black-700 font-pbold mt-6 mb-2">
                   No Clinics Nearby
                 </Text>
                 <Text className="text-center text-black-300 mb-6">
@@ -272,13 +298,13 @@ const Home = () => {
                   handlePress={getCurrentLocation}
                   customStyles="w-full"
                   secondScheme={true}
+                  useGradient
                 />
               </View>
             </View>
           }
         />
       </View>
-      <StatusBar style="dark" translucent />
     </SafeAreaView>
   );
 };

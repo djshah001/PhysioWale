@@ -176,7 +176,7 @@ const AppointmentDetailScreen = () => {
     return (
       <SafeAreaView className="flex-1 bg-white-100 justify-center items-center" edges={['top', 'left', 'right']}>
         <ActivityIndicator size="large" color={colors.secondary[300]} />
-        <Text className="mt-4 font-osregular text-black-300">
+        <Text className="mt-4 font-osregular text-black-600">
           Loading appointment details...
         </Text>
       </SafeAreaView>
@@ -250,10 +250,10 @@ const AppointmentDetailScreen = () => {
 
         {/* Clinic Details */}
         <View className="bg-white-300 rounded-xl p-4 shadow-sm mb-4 border border-secondary-100/20">
-          <Text className="font-pbold text-xl text-black-400">
+          <Text className="font-pbold text-xl text-black-800">
             {appointment.clinicId?.name}
           </Text>
-          <Text className="font-osregular text-sm text-black-300 mb-2">
+          <Text className="font-osregular text-sm text-black-600 mb-2">
             {appointment.clinicId?.address}
           </Text>
 
@@ -266,7 +266,7 @@ const AppointmentDetailScreen = () => {
               iconColor="#4A90E2"
               style={{ margin: 0, marginRight: -5 }}
             />
-            <Text className="font-ossemibold text-black-300">
+            <Text className="font-ossemibold text-black-600">
               Dr. {appointment.doctorId?.name}
             </Text>
           </View>
@@ -274,7 +274,7 @@ const AppointmentDetailScreen = () => {
 
         {/* Appointment Details */}
         <View className="bg-white-300 rounded-xl p-4 shadow-sm mb-4 border border-secondary-100/20">
-          <Text className="font-pbold text-lg text-black-400 mb-2">
+          <Text className="font-pbold text-lg text-black-800 mb-2">
             Appointment Details
           </Text>
 
@@ -285,7 +285,7 @@ const AppointmentDetailScreen = () => {
               iconColor="#4A90E2"
               style={{ margin: 0, marginRight: -5 }}
             />
-            <Text className="font-ossemibold text-black-300">
+            <Text className="font-ossemibold text-black-600">
               {formattedDate}
             </Text>
           </View>
@@ -297,7 +297,7 @@ const AppointmentDetailScreen = () => {
               iconColor="#4A90E2"
               style={{ margin: 0, marginRight: -5 }}
             />
-            <Text className="font-ossemibold text-black-300">
+            <Text className="font-ossemibold text-black-600">
               {appointment.time}
             </Text>
           </View>
@@ -308,10 +308,10 @@ const AppointmentDetailScreen = () => {
           <View className="bg-secondary-100/20 p-3 rounded-lg mt-3">
             <View className="flex-row justify-between mt-1">
               <View className="flex-1">
-                <Text className="font-ossemibold text-black-400">
+                <Text className="font-ossemibold text-black-800">
                   {appointment.serviceId?.name}
                 </Text>
-                <Text className="font-osregular text-sm text-black-300">
+                <Text className="font-osregular text-sm text-black-600">
                   {appointment.serviceId?.duration} min
                 </Text>
               </View>
@@ -323,8 +323,8 @@ const AppointmentDetailScreen = () => {
 
           {appointment.notes && (
             <View className="mt-3">
-              <Text className="font-ossemibold text-black-400">Notes:</Text>
-              <Text className="font-osregular text-black-300 mt-1">
+              <Text className="font-ossemibold text-black-800">Notes:</Text>
+              <Text className="font-osregular text-black-600 mt-1">
                 {appointment.notes}
               </Text>
             </View>
@@ -368,6 +368,19 @@ const AppointmentDetailScreen = () => {
               bgColor="#E53E3E"
               handlePress={handleCancelAppointment}
               loading={loading}
+            />
+          )}
+
+          {appointment.status === "completed" && (
+            <CustomBtn
+              title="Review Clinic"
+              iconName="star"
+              className="rounded-xl"
+              bgColor="#F59E0B"
+              handlePress={() => router.push({
+                pathname: `/clinics/${appointment.clinicId?._id}/reviews`,
+                params: { appointmentId: appointment._id }
+              })}
             />
           )}
 

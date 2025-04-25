@@ -18,27 +18,27 @@ import { BlurView } from "expo-blur";
 import { Appbar, Icon, IconButton, Chip, List } from "react-native-paper";
 import { cssInterop } from "nativewind";
 import { StatusBar } from "expo-status-bar";
-import colors from "../../constants/colors";
+import colors from "../../../constants/colors";
 import Animated from "react-native-reanimated";
-import { useClinicsState, useToastSate } from "../../atoms/store";
+import { useClinicsState, useToastSate } from "../../../atoms/store";
 import { MotiView, MotiText } from "moti";
 import { LinearGradient } from "expo-linear-gradient";
-import { blurhash } from "../../components/Utility/Repeatables";
-import InfoCard from "../../components/Clinic/InfoCard";
-import ImageCarousel from "../../components/Clinic/ImageCarousel";
-import ClinicTimingSheet from "../../components/Clinic/ClinicTimingSheet";
+import { blurhash } from "../../../components/Utility/Repeatables";
+import InfoCard from "../../../components/Clinic/InfoCard";
+import ImageCarousel from "../../../components/Clinic/ImageCarousel";
+import ClinicTimingSheet from "../../../components/Clinic/ClinicTimingSheet";
 import {
   getFacilityIcon,
   getServiceIcon,
-} from "../../components/Utility/iconHelpers";
-import CustomBtn from "../../components/CustomBtn";
-import { CustomChip } from "../../components/ReUsables/CustomChip";
+} from "../../../components/Utility/iconHelpers";
+import CustomBtn from "../../../components/CustomBtn";
+import { CustomChip } from "../../../components/ReUsables/CustomChip";
 
 cssInterop(Appbar, { className: "style" });
 cssInterop(Icon, { className: "style" });
 
 const ClinicScreen = () => {
-  const { clinicId, distance } = useLocalSearchParams();
+  const { id, distance } = useLocalSearchParams();
   const [Clinics, setClinics] = useClinicsState();
   const [toast, setToast] = useToastSate();
   const [showFullDescription, setShowFullDescription] = useState(false);
@@ -49,9 +49,9 @@ const ClinicScreen = () => {
 
   // Memoize clinic data to prevent unnecessary re-renders
   const ClinicData = useMemo(() => {
-    if (!Array.isArray(Clinics) || !clinicId) return null;
-    return Clinics.find((clinic) => clinic._id === clinicId) || null;
-  }, [Clinics, clinicId]);
+    if (!Array.isArray(Clinics) || !id) return null;
+    return Clinics.find((clinic) => clinic._id === id) || null;
+  }, [Clinics, id]);
 
   // Get current day for timing display
   const today = useMemo(
@@ -118,7 +118,7 @@ const ClinicScreen = () => {
   //   return (
   //     <View className="flex-1 justify-center items-center bg-white-300">
   //       <ActivityIndicator size="large" color={colors.secondary[300]} />
-  //       <Text className="text-lg font-pbold mt-4 text-black-400">
+  //       <Text className="text-lg font-pbold mt-4 text-black-600">
   //         Loading clinic details...
   //       </Text>
   //     </View>
@@ -134,10 +134,10 @@ const ClinicScreen = () => {
           size={80}
           color={colors.secondary[200]}
         />
-        <Text className="text-xl font-pbold mt-4 text-black-400">
+        <Text className="text-xl font-pbold mt-4 text-black-600">
           Clinic not found
         </Text>
-        <Text className="text-sm font-osregular text-black-300 mt-2 mb-6 text-center px-8">
+        <Text className="text-sm font-osregular text-black-600 mt-2 mb-6 text-center px-8">
           The clinic you're looking for doesn't exist or has been removed.
         </Text>
         <TouchableOpacity
@@ -209,7 +209,7 @@ const ClinicScreen = () => {
             from={{ opacity: 0, translateY: 5 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "timing", duration: 500 }}
-            className="text-2xl font-pbold text-black-400"
+            className="text-2xl font-pbold text-black-800"
           >
             {ClinicData.name}
           </MotiText>
@@ -240,29 +240,13 @@ const ClinicScreen = () => {
             className="flex-row flex-wrap gap-1 mt-1"
           >
             {ClinicData.specializations?.slice(0, 3).map((spec, idx) => (
-              <CustomChip
-                key={idx}
-                spec={spec}
-                // compact={true}
-              />
+              <CustomChip key={idx} spec={spec} compact={true} />
             ))}
             {ClinicData.specializations?.length > 3 && (
-              <Chip
-                className="mr-2 mb-1 shadow-md shadow-secondary-400"
-                textStyle={{
-                  fontSize: 10,
-                  color: colors.white[300],
-                  fontWeight: "bold",
-                }}
-                style={{
-                  backgroundColor: colors.secondary[200],
-                }}
-                elevated
-                elevation={3}
-                compact
-              >
-                +{ClinicData.specializations.length - 3} more
-              </Chip>
+              <CustomChip
+                spec={`+${ClinicData.specializations.length - 3} more`}
+                compact={true}
+              />
             )}
           </MotiView>
         </BlurView>
@@ -274,7 +258,7 @@ const ClinicScreen = () => {
           transition={{ type: "timing", duration: 400 }}
           className="px-4 mb-4"
         >
-          <View className="flex-row justify-around py-3 px-2 bg-white-100 rounded-xl shadow-sm">
+          <View className="flex-row justify-around py-3 px-2 bg-white-200 rounded-xl shadow-md">
             <TouchableOpacity
               className="items-center"
               onPress={() => scrollToSection(400)}
@@ -286,7 +270,7 @@ const ClinicScreen = () => {
                   color={colors.secondary[300]}
                 />
               </View>
-              <Text className="text-xs font-ossemibold text-black-300">
+              <Text className="text-xs font-ossemibold text-black-600">
                 Services
               </Text>
             </TouchableOpacity>
@@ -302,7 +286,7 @@ const ClinicScreen = () => {
                   color={colors.secondary[300]}
                 />
               </View>
-              <Text className="text-xs font-ossemibold text-black-300">
+              <Text className="text-xs font-ossemibold text-black-600">
                 Facilities
               </Text>
             </TouchableOpacity>
@@ -318,7 +302,7 @@ const ClinicScreen = () => {
                   color={colors.secondary[300]}
                 />
               </View>
-              <Text className="text-xs font-ossemibold text-black-300">
+              <Text className="text-xs font-ossemibold text-black-600">
                 Timings
               </Text>
             </TouchableOpacity>
@@ -331,7 +315,7 @@ const ClinicScreen = () => {
                   color={colors.secondary[300]}
                 />
               </View>
-              <Text className="text-xs font-ossemibold text-black-300">
+              <Text className="text-xs font-ossemibold text-black-600">
                 Directions
               </Text>
             </TouchableOpacity>
@@ -351,7 +335,7 @@ const ClinicScreen = () => {
             type: "timing",
             duration: 500,
           }}
-          className="px-4 gap-2 py-4 relative"
+          className="px-4 gap-2 relative"
         >
           {/* Essential Info Cards */}
           <View className=" flex-row flex-wrap justify-between gap-1 ">
@@ -380,9 +364,13 @@ const ClinicScreen = () => {
             />
 
             <InfoCard
-              icon="city"
-              title="City"
-              value={ClinicData.city || "Not Available"}
+              icon="star"
+              title="Rating"
+              value={`${ClinicData.rating?.overall || "New"} (${
+                ClinicData.rating?.reviewCount || 0
+              })`}
+              actionIcon="chevron-right"
+              onAction={() => router.push(`/clinics/${id}/reviews`)}
               // otherStyles={'w-1/2'}
             />
 
@@ -408,12 +396,12 @@ const ClinicScreen = () => {
                     color={colors.white[300]}
                   />
                 </View>
-                <Text className="text-xl font-pbold text-black-400">
+                <Text className="text-xl font-pbold text-black-600">
                   Services
                 </Text>
               </View>
 
-              <View className="bg-white-100 rounded-2xl shadow-md border border-secondary-100/20 overflow-hidden">
+              <View className="bg-white-200 rounded-2xl shadow-md border border-secondary-100/20 overflow-hidden">
                 <List.AccordionGroup>
                   {ClinicData?.services?.map((service, index) => (
                     <MotiView
@@ -425,7 +413,7 @@ const ClinicScreen = () => {
                       <List.Accordion
                         id={index.toString()}
                         title={
-                          <Text className="text-base font-pbold text-black-400">
+                          <Text className="text-base font-pbold text-black-600">
                             {service.name}
                           </Text>
                         }
@@ -434,7 +422,7 @@ const ClinicScreen = () => {
                             <Text className="text-sm font-pbold text-secondary-300">
                               {service.price > 0 ? `₹${service.price}` : "Free"}
                             </Text>
-                            <Text className="text-sm font-pregular text-black-300">
+                            <Text className="text-sm font-pregular text-black-600">
                               {service.duration} min
                             </Text>
                           </View>
@@ -451,7 +439,7 @@ const ClinicScreen = () => {
                           title={null}
                           description={() => (
                             <View className="px-4 py-2">
-                              <Text className="text-sm font-osregular text-black-300 leading-5 mb-3">
+                              <Text className="text-sm font-psemibold text-black-700 leading-5 mb-3">
                                 {service.description ||
                                   "No description available for this service."}
                               </Text>
@@ -478,7 +466,7 @@ const ClinicScreen = () => {
                             </View>
                           )}
                           style={{
-                            backgroundColor: colors.secondary[50],
+                            backgroundColor: colors.secondary[150],
                             paddingVertical: 0,
                           }}
                         />
@@ -501,12 +489,12 @@ const ClinicScreen = () => {
                     color={colors.white[300]}
                   />
                 </View>
-                <Text className="text-xl font-pbold text-black-400">
+                <Text className="text-xl font-pbold text-black-600">
                   Facilities
                 </Text>
               </View>
 
-              <View className="bg-white-100 rounded-2xl p-5 shadow-md border border-secondary-100/20">
+              <View className="bg-white-200 rounded-2xl p-5 shadow-md border border-secondary-100/20">
                 <View className="flex-row flex-wrap justify-between gap-3 ">
                   {ClinicData?.facilities?.map((facility, index) => (
                     <MotiView
@@ -514,7 +502,7 @@ const ClinicScreen = () => {
                       from={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 50, type: "spring" }}
-                      className="bg-white-200 rounded-xl p-3 shadow-sm border border-secondary-100/10 flex-row items-center  flex-grow "
+                      className="bg-white-200 rounded-xl p-3 shadow-xl border border-secondary-100/10 flex-row items-center  flex-grow "
                       style={{
                         width: "48%",
                       }}
@@ -522,7 +510,7 @@ const ClinicScreen = () => {
                       <View
                         className="rounded-full p-2 mr-2"
                         style={{
-                          backgroundColor: `${colors.secondary[100]}40`,
+                          backgroundColor: `${colors.secondary[100]}`,
                         }}
                       >
                         <Icon
@@ -531,7 +519,7 @@ const ClinicScreen = () => {
                           color={colors.secondary[300]}
                         />
                       </View>
-                      <Text className="text-sm font-ossemibold text-black-300 flex-1 flex-wrap">
+                      <Text className="text-sm font-ossemibold text-black-600 flex-1 flex-wrap">
                         {facility}
                       </Text>
                     </MotiView>
@@ -552,14 +540,14 @@ const ClinicScreen = () => {
                     color={colors.white[300]}
                   />
                 </View>
-                <Text className="text-xl font-pbold text-black-400">
+                <Text className="text-xl font-pbold text-black-600">
                   About Clinic
                 </Text>
               </View>
 
-              <View className="bg-white-100 rounded-2xl p-5 shadow-md border border-secondary-100/20">
+              <View className="bg-white-200 rounded-2xl p-5 shadow-md border border-secondary-100/20">
                 <Text
-                  className="text-base font-osregular text-black-300 leading-6"
+                  className="text-base font-osregular text-black-600 leading-6"
                   numberOfLines={showFullDescription ? undefined : 3}
                 >
                   {ClinicData.description}
@@ -580,28 +568,40 @@ const ClinicScreen = () => {
         </MotiView>
       </ScrollView>
 
-      {/* Floating Appointment Button */}
+      {/* Floating Action Buttons */}
       <MotiView
         from={{ opacity: 0, translateY: 20 }}
         animate={{ opacity: 1, translateY: 0 }}
         transition={{ type: "spring", stiffness: 100, delay: 300 }}
-        className="absolute bottom-4 left-6 right-6"
+        className="absolute bottom-4 gap-2 flex-row self-center px-4 "
       >
         <CustomBtn
           title="Book Appointment"
           iconName="calendar-check"
-          className="rounded-xl"
+          className="rounded-xl flex-1 "
           useGradient
-          // gradientColors={[]}
-          handlePress={() =>
+          handlePress={() => {
+            const params = {
+              clinicId: ClinicData._id,
+              doctorId: ClinicData.doctor._id,
+            };
             router.push({
-              pathname: `/appointments/book`,
-              params: {
-                clinicId: ClinicData._id,
-                doctorId: ClinicData.doctor._id,
-              },
-            })
-          }
+              pathname: "/appointments/book",
+              params,
+            });
+          }}
+        />
+
+        <CustomBtn
+          // title="View Reviews"
+          iconName="comment-text-multiple-outline"
+          className="rounded-xl"
+          variant="outlined"
+          borderColor={colors.secondary[300]}
+          textColor={colors.secondary[300]}
+          handlePress={() => {
+            router.push(`/clinics/${id}/reviews`);
+          }}
         />
       </MotiView>
 

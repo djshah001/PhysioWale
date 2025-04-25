@@ -33,7 +33,10 @@ export default function IconMenu() {
                     </Text>
                   </>
                 ) : ( */}
-                  <Text className="text-center text-xs text-black font-psemibold">
+                  <Text
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                   className="text-center text-xs text-black font-psemibold">
                     {item.title}
                   </Text>
                 {/* )} */}

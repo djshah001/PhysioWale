@@ -1,4 +1,3 @@
-
 import React from "react";
 import { TouchableOpacity, Text, ActivityIndicator, View } from "react-native";
 import colors from "../constants/colors";
@@ -23,7 +22,7 @@ export default function CustomBtn({
   gradientEnd = { x: 1, y: 0 },
   bgColor,
   borderColor,
-  textColor
+  textColor,
 }) {
   // Define gray colors since they're missing from colors file
   const grayColors = {
@@ -58,21 +57,23 @@ export default function CustomBtn({
       {loading ? (
         <ActivityIndicator color={getTextColor()} size="small" />
       ) : (
-        <View className="flex-row items-center justify-center">
+        <View className="flex-row items-center justify-center gap-2">
           {iconName && iconPosition === "left" && (
             <MaterialCommunityIcons
               name={iconName}
               size={iconSize}
               color={iconColorToUse}
-              style={{ marginRight: 8 }}
+              // style={{ marginRight: 8 }}
             />
           )}
-          <Text
-            className={`text-center font-psemibold text-base ${textClassName}`}
-            style={{ color: getTextColor() }}
-          >
-            {title}
-          </Text>
+          {title && (
+            <Text
+              className={`text-center font-psemibold text-base ${textClassName}`}
+              style={{ color: getTextColor() }}
+            >
+              {title}
+            </Text>
+          )}
           {iconName && iconPosition === "right" && (
             <MaterialCommunityIcons
               name={iconName}

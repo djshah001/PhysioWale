@@ -241,7 +241,7 @@ const RescheduleScreen = () => {
     return (
       <SafeAreaView className="flex-1 bg-white-100 justify-center items-center" edges={['top', 'left', 'right']}>
         <ActivityIndicator size="large" color="#4A90E2" />
-        <Text className="mt-4 font-osregular text-black-300">
+        <Text className="mt-4 font-osregular text-black-600">
           Loading appointment details...
         </Text>
       </SafeAreaView>
@@ -313,28 +313,28 @@ const RescheduleScreen = () => {
               <Icon source="hospital-building" size={20} color="#4A90E2" />
             </View>
             <View className="flex-1">
-              <Text className="font-pbold text-lg text-black-400">
+              <Text className="font-pbold text-lg text-black-800">
                 {appointment.clinicId?.name}
               </Text>
-              <Text className="font-osregular text-sm text-black-300">
+              <Text className="font-osregular text-sm text-black-600">
                 Dr. {appointment.doctorId?.name} • {appointment.serviceId?.name}
               </Text>
             </View>
           </View>
 
           <View className="bg-blue-50 p-4 rounded-lg mt-3 border border-blue-100">
-            {/* <Text className="font-ossemibold text-black-400 mb-1">
+            {/* <Text className="font-ossemibold text-black-800 mb-1">
               Current Appointment
             </Text> */}
             <View className="flex-row items-center mt-1 gap-1">
               <Icon source="calendar" size={18} color="#4A90E2" />
-              <Text className="font-osregular text-black-300">
+              <Text className="font-osregular text-black-600">
                 {format(new Date(appointment.date), "EEEE, MMMM d, yyyy")}
               </Text>
             </View>
             <View className="flex-row items-center mt-1 gap-1">
               <Icon source="clock-outline" size={18} color="#4A90E2" />
-              <Text className="font-osregular text-black-300">
+              <Text className="font-osregular text-black-600">
                 {appointment.time}
               </Text>
             </View>
@@ -345,7 +345,7 @@ const RescheduleScreen = () => {
         <View className="bg-white-300 rounded-xl p-5 shadow-md mb-5 border border-secondary-100/20">
           <View className="flex-row mb-3 gap-1">
             <Icon source="calendar-month" size={22} color="#4A90E2" />
-            <Text className="font-pbold text-lg text-black-400">
+            <Text className="font-pbold text-lg text-black-800">
               Select New Date
             </Text>
           </View>
@@ -381,7 +381,7 @@ const RescheduleScreen = () => {
               color="#4A90E2"
               style={{ marginRight: 10 }}
             />
-            <Text className="font-pbold text-lg text-black-400">
+            <Text className="font-pbold text-lg text-black-800">
               Select New Time
             </Text>
           </View>
@@ -389,7 +389,7 @@ const RescheduleScreen = () => {
           {loadingTimeSlots ? (
             <View className="py-8 items-center">
               <ActivityIndicator size="small" color="#4A90E2" />
-              <Text className="mt-2 font-osregular text-black-300">
+              <Text className="mt-2 font-osregular text-black-600">
                 Loading available time slots...
               </Text>
             </View>
@@ -401,10 +401,10 @@ const RescheduleScreen = () => {
                 color="#9CA3AF"
                 style={{ marginBottom: 10 }}
               />
-              <Text className="font-ossemibold text-black-400 text-center">
+              <Text className="font-ossemibold text-black-800 text-center">
                 No available time slots for this date.
               </Text>
-              <Text className="mt-2 font-osregular text-black-300 text-center px-4">
+              <Text className="mt-2 font-osregular text-black-600 text-center px-4">
                 {selectedDate === format(new Date(), "yyyy-MM-dd")
                   ? "Past time slots for today are not available. Please select a future time or a different date."
                   : "Please select a different date."}
@@ -426,7 +426,7 @@ const RescheduleScreen = () => {
                     className={`font-ossemibold text-center ${
                       selectedTimeSlot === timeSlot
                         ? "text-white-100"
-                        : "text-black-300"
+                        : "text-black-600"
                     }`}
                   >
                     {timeSlot}
@@ -445,6 +445,7 @@ const RescheduleScreen = () => {
           iconName="calendar-check"
           className="rounded-xl"
           bgColor="#4A90E2"
+          useGradient
           handlePress={handleReschedule}
           loading={submitting}
           disabled={!selectedDate || !selectedTimeSlot || loadingTimeSlots}

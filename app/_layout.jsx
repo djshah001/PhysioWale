@@ -63,8 +63,20 @@ const Rootlayout = () => {
           <SheetProvider>
             <Stack screenOptions={defaultScreenOptions}>
               <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
-              <Stack.Screen name="appointments" />
+              <Stack.Screen name="appointments" options={{ animation: "slide_from_right" }} />
               <Stack.Screen name="index" options={{ animation: "fade" }} />
+              <Stack.Screen
+                name="clinics"
+                options={{ animation: "slide_from_right" }}
+              />
+              {/* <Stack.Screen name="profile" /> */}
+              <Stack.Screen name="notifications" />
+              <Stack.Screen name="(Self-Test)" />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="onboarding"
+                options={{ headerShown: false }}
+              />
             </Stack>
 
             <CustomToast />

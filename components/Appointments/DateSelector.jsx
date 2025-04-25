@@ -13,7 +13,7 @@ const DateSelector = ({ selectedDate, onPress, formatDate }) => {
       animate={{ opacity: 1, translateY: 0 }}
       transition={{ type: 'timing', duration: 500, delay: 100 }}
     >
-      <Text className="font-pbold text-lg text-black-400 mb-2">
+      <Text className="font-pbold text-lg text-black-800 mb-2">
         Select Date
       </Text>
       <TouchableOpacity

@@ -1,8 +1,8 @@
 import { Stack } from "expo-router";
 import React from "react";
-import colors from "../../constants/colors";
+import colors from "../../../constants/colors";
 
-const ClinicLayout = () => {
+const ClinicIdLayout = () => {
   return (
     <Stack
       screenOptions={{
@@ -11,14 +11,14 @@ const ClinicLayout = () => {
         animation: "slide_from_right",
       }}
     >
-      {/* <Stack.Screen
-        name="[clinic]"
+      <Stack.Screen
+        name="index"
         options={{
           animation: "slide_from_right",
         }}
-      /> */}
+      />
       <Stack.Screen
-        name="[clinicId]"
+        name="reviews"
         options={{
           animation: "slide_from_right",
         }}
@@ -27,4 +27,4 @@ const ClinicLayout = () => {
   );
 };
 
-export default ClinicLayout;
+export default ClinicIdLayout;

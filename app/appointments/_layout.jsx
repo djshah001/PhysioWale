@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { defaultScreenOptions } from "../../constants/navigationConfig";
+import colors from "../../constants/colors";
 
 const AppointmentsLayout = () => {
   return (
@@ -9,48 +10,50 @@ const AppointmentsLayout = () => {
         ...defaultScreenOptions,
         gestureEnabled: true,
         gestureDirection: "horizontal",
+        animation: "slide_from_right",
+        contentStyle: { backgroundColor: colors.white[300] },
       }}
     >
       <Stack.Screen
         name="book"
         options={{
-          presentation: "card",
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen
         name="success"
         options={{
-          presentation: "card",
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen
         name="failure"
         options={{
-          presentation: "card",
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen
         name="my-appointments"
         options={{
-          presentation: "card",
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen
         name="history"
         options={{
-          presentation: "card",
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen
         name="reschedule"
         options={{
-          presentation: "card",
+          animation: "slide_from_right",
         }}
       />
       <Stack.Screen
         name="[id]"
         options={{
-          presentation: "card",
+          animation: "slide_from_right",
         }}
       />
     </Stack>

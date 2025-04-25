@@ -27,6 +27,19 @@ const Profile = () => {
     router.replace("/sign-in");
   };
 
+  const ProfileMenu = [
+    {
+      href:'/appointments/my-appointments',
+      title:'My Appointments',
+      icon:'calendar'
+    },
+    {
+      href:'/profile/edit-profile',
+      title:'Edit Profile',
+      icon:'account-edit'
+    }
+  ]
+
   return (
     <SafeAreaView className="h-full bg-white-300">
       <ScrollView
@@ -36,8 +49,8 @@ const Profile = () => {
         }}
       >
         {/* Profile Header */}
-        <View className="w-full items-center justify-around py-6 flex-row">
-          <View className="relative">
+        <View className="flex-1 items-center justify-around py-6 flex-row bg-white-100 rounded-2xl p-4 shadow-sm shadow-black-200 my-4">
+          <View className="relative items-center">
             <Image
               source={
                 UserData.profilePic ? { uri: UserData.profilePic } : images.no
@@ -48,7 +61,7 @@ const Profile = () => {
               className="w-24 h-24 rounded-full"
             />
             {/* Edit Profile Button */}
-            <Link
+            {/* <Link
               href="/profile/edit-profile"
               className="absolute bottom-0 right-0 bg-secondary-300 p-3 rounded-full "
             >
@@ -60,34 +73,32 @@ const Profile = () => {
                 color="#F7F8F8"
                 // mode="contained"
               />
-            </Link>
-          </View>
-
-          <View className="mt-3">
-            <Text className="text-center font-osbold text-2xl">
-              {UserData.name}
-            </Text>
-            <Text className="text-center text-md font-osthin">
-              {UserData.email || UserData.phoneNumber}
-            </Text>
-            {UserData.age && (
-              <View className="flex-row justify-center items-center mt-1">
-                <Text className="text-center text-sm font-osthin text-gray-600">
-                  {UserData.age} years
-                </Text>
-                {UserData.gender && (
-                  <Text className="text-center text-sm font-osthin text-gray-600 ml-2">
-                    •{" "}
-                    {UserData.gender}
+            </Link> */}
+            <View className="">
+              <Text className="text-center font-osbold text-xl">
+                {UserData.name}
+              </Text>
+              {/* <Text className="text-center text-sm font-osthin">
+                {UserData.email || UserData.phoneNumber}
+              </Text>
+              {UserData.age && (
+                <View className="flex-row justify-center items-center">
+                  <Text className="text-center text-xs font-osthin text-gray-600">
+                    {UserData.age} years
                   </Text>
-                )}
-              </View>
-            )}
+                  {UserData.gender && (
+                    <Text className="text-center text-xs font-osthin text-gray-600 ml-2">
+                      • {UserData.gender}
+                    </Text>
+                  )}
+                </View>
+              )} */}
+            </View>
           </View>
-        </View>
 
-        {/* Health Metrics Section */}
-        <HealthMetrics />
+          {/* Health Metrics Section */}
+          <HealthMetrics />
+        </View>
 
         {/* QR Code Section */}
         {UserData.qrCode && (
@@ -96,18 +107,9 @@ const Profile = () => {
 
         <View className="w-full mt-2 gap-4 bg-white-100 rounded-2xl p-4 shadow-sm shadow-black-200">
           {/* My Appointments Button */}
-          <ProfileLinks
-            href="/appointments/my-appointments"
-            title="My Appointments"
-            icon="calendar"
-          />
-
-          {/* Edit Profile Button */}
-          <ProfileLinks
-            href="/profile/edit-profile"
-            title="Edit Profile"
-            icon="account-edit"
-          />
+          {ProfileMenu.map((item) => (
+            <ProfileLinks key={item.title} {...item} />
+          ))}
 
           {/* Logout Button */}
           <CustomBtn
